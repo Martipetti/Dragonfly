@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Drone-Route-Simulator2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/ExecuteApplication/Ubuntu/Normal/Drone-Route-Simulator.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

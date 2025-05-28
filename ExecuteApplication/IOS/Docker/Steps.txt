@@ -1,0 +1,18 @@
+Steps to prepare and launch the build with docker:
+1 - Go to the Dockerfile path (../Dragonfly-master/ExecuteApplication/IOS/Docker/DockerImage)
+2 - Lunch Docker deamon (lunch the docker app)
+3 - Run the follow command to prepare the image:
+    docker build -t dragonfly .
+4 - If xquartz is not installed, install (the following command is made to install with brew):
+    brew install --cask
+5 - Lunch XQuartz:
+    open -a XQuartz
+4 - Run the follow command:
+    xhost +localhost
+5 - Run the docker image:
+    docker run -it --rm \
+  -e DISPLAY=host.docker.internal:0 \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
+  dragonfly
+
+To run again just do the procedure starting from step 5

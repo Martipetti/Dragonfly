@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Drone-Route-Simulator4">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/ExecuteApplication/Ubuntu/Docker/DockerImage/Drone-Route-Simulator.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
