@@ -1193,6 +1193,14 @@ public class DroneBusinessObject {
         currentDrone.setStrongWind(false);
     }
 
+    public static void setStrongRain(Drone currentDrone) {
+        currentDrone.setStrongRain(true);
+    }
+
+    public static void setNormalRain(Drone currentDrone) {
+        currentDrone.setStrongRain(false);
+    }
+
     public static void updateFlyDirectionCommand(KeyCode flyDirectionCommand, Drone selectedDrone) {
         selectedDrone.setFlyDirectionCommand(flyDirectionCommand);
     }

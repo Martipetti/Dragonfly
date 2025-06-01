@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class WrapperHelper {
     //private static String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-    private static String relativePath = "src/wrappers/";
+    private static String relativePath = "DragonFly-Project/src/wrappers/";
     private static String nameFile = "properties.xml";
     private static String fullPath = /*rootPath+ */relativePath +nameFile;
     private static File propetiesFile = new File(fullPath);

@@ -33,6 +33,7 @@
 
             </ToggleButton>
             <Label fx:id="strongWindLabel" layoutX="4.0" layoutY="161.0" text="Wind force:" />
+            <Label fx:id="strongRainLabel" layoutX="4.0" layoutY="196.0" text="Rain force:" />
             <ImageView fitHeight="32.0" fitWidth="32.0" layoutX="76.0" layoutY="41.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@hospital.png" />
@@ -50,16 +51,16 @@
                   <Image url="@antenna.png" />
                </image>
             </ImageView>
-            <Button fx:id="deleteButton" layoutX="4.0" layoutY="192.0" mnemonicParsing="false" text="Delete" />
-            <Button fx:id="cleanButton" layoutX="68.0" layoutY="192.0" mnemonicParsing="false" text="Clean" />
+            <Button fx:id="deleteButton" layoutX="4.0" layoutY="227.0" mnemonicParsing="false" text="Delete" />
+            <Button fx:id="cleanButton" layoutX="68.0" layoutY="227.0" mnemonicParsing="false" text="Clean" />
             <ToggleButton fx:id="boatToggleButton" layoutX="2.0" layoutY="84.0" selected="false" text="Boat" />
             <ImageView layoutX="9.0" layoutY="116.0">
                <image>
                   <Image url="@boat.png" />
                </image>
             </ImageView>
-            <Line endX="-34.0" endY="-22.0" layoutX="301.0" layoutY="27.0" startX="-34.0" startY="209.20709228515625" />
-            <Line endX="581.0" endY="241.70709228515625" layoutX="322.0" layoutY="-5.0" startX="-322.0" startY="241.70709228515625" />
+            <Line endX="-34.0" endY="-22.0" layoutX="301.0" layoutY="27.0" startX="-34.0" startY="234" />
+            <Line endX="581.0" endY="265.70709228515625" layoutX="322.0" layoutY="-5.0" startX="-322.0" startY="265.70709228515625" />
             <AnchorPane fx:id="defaultPanelSettingsAnchorPane" layoutX="269.0" layoutY="4.0" maxHeight="242.0" maxWidth="337.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="227.0" prefWidth="336.0" />
             <ImageView fitHeight="26.0" fitWidth="23.0" layoutX="79.0" layoutY="116.0">
                <image>
@@ -74,6 +75,7 @@
             <ToggleButton fx:id="houseToggleButton" layoutX="60.0" layoutY="84.0" mnemonicParsing="false" text="House" />
             <ToggleButton fx:id="treeToggleButton" layoutX="145.0" layoutY="84.0" mnemonicParsing="false" text="Tree" />
             <ComboBox fx:id="windForceCombBox" layoutX="80.0" layoutY="157.0" prefWidth="150.0" />
+            <ComboBox fx:id="rainForceCombBox" layoutX="80.0" layoutY="192.0" prefWidth="150.0" />
 
                         
                                  </children>

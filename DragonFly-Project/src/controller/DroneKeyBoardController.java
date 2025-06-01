@@ -219,7 +219,19 @@ public class DroneKeyBoardController extends DroneController {
         }
     }
 
+    @Override
+    public void consumeStrongRain() {
+        for(Drone drone: droneMap.values()){
+            DroneBusinessObject.setStrongRain(drone);
+        }
+    }
 
+    @Override
+    public void consumeNormalRain() {
+        for(Drone drone: droneMap.values()){
+            DroneBusinessObject.setNormalRain(drone);
+        }
+    }
 
     @Override
     public Drone createDrone(String uniqueID, String droneLabel,

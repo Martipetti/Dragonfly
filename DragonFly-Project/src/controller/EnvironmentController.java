@@ -24,7 +24,8 @@ public class EnvironmentController {
     private CellView selectedCellView;
     private EnvironmentView environmentView;
     private Environment environment;
-    private Timer ramdomStrongWind;
+    private Timer randomStrongWind;
+    private Timer randomStrongRain;
     private ScheduledExecutorService executor;
 
     private static EnvironmentController instance = null;
@@ -131,8 +132,8 @@ public class EnvironmentController {
     }
 
     public void consumeRandomWind() {
-        ramdomStrongWind = new Timer();
-        ramdomStrongWind.scheduleAtFixedRate(new TimerTask() {
+        randomStrongWind = new Timer();
+        randomStrongWind.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 Random random = new Random();
@@ -159,6 +160,43 @@ public class EnvironmentController {
 
                 }
 
+            }
+        }, 0, 1000);
+    }
+
+    public void consumeStrongRain() {
+        stopRandomStrongRain();
+        environmentView.applyStrongRain();
+
+        DroneController.getInstance().consumeStrongRain();
+    }
+
+    public void consumeNormalRain() {
+        stopRandomStrongRain();
+        environmentView.removeStrongRain();
+
+        DroneController.getInstance().consumeNormalRain();
+    }
+
+    public void consumeRandomRain() {
+        randomStrongRain = new Timer();
+        randomStrongRain.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Random random = new Random();
+                boolean bool = random.nextBoolean();
+
+                if (bool) {
+                    Platform.runLater(() -> {
+                        environmentView.applyStrongRain();
+                    });
+                    DroneController.getInstance().consumeStrongRain();
+                } else {
+                    Platform.runLater(() -> {
+                        environmentView.removeStrongRain();
+                    });
+                    DroneController.getInstance().consumeNormalRain();
+                }
             }
         }, 0, 1000);
     }
@@ -439,11 +477,19 @@ public class EnvironmentController {
 
     private void stopRandomStrongWind() {
         try {
-            ramdomStrongWind.cancel();
+            randomStrongWind.cancel();
         } catch (Exception e) {
 
         }
 
+    }
+
+    private void stopRandomStrongRain() {
+        try {
+            randomStrongRain.cancel();
+        } catch (Exception e) {
+
+        }
     }
 
 
