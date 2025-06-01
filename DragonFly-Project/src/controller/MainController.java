@@ -94,7 +94,7 @@ public class MainController extends Application {
 
         menuControler = new MenuController(rootAnchorPane, primaryStage);
 
-        Scene scene = new Scene(rootAnchorPane, 903, 705);
+        Scene scene = new Scene(rootAnchorPane, 903, 750);
 
         primaryStage.setScene(scene);
         primaryStage.show();

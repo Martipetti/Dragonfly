@@ -21,10 +21,9 @@ public class EnvironmentView {
     private  CellController cellController = CellController.getInstance();
 
     public EnvironmentView(Cell cell, AnchorPane envivonmentAnchorPane) {
-        new EnvironmentView(cell, envivonmentAnchorPane);
+        //new EnvironmentView(cell, envivonmentAnchorPane);
         cellController.init(this);
         gridpane.setFocusTraversable(true);
-
     }
 
     public void notifyclearEnverionment() {
@@ -33,6 +32,7 @@ public class EnvironmentView {
 
 
     public EnvironmentView(int countRow, int countColunm, AnchorPane environmentAnchorPane) {
+        gridpane.setLayoutY(35);
 
         for(int i = 0; i < countColunm; i++) {
             ColumnConstraints column = new ColumnConstraints(30);
@@ -106,6 +106,7 @@ public class EnvironmentView {
 
     public void applyStrongRain() {
         if(!envivonmentAnchorPane.getChildren().contains(rainImageView)) {
+            rainImageView.setX(35);
             envivonmentAnchorPane.getChildren().add(rainImageView);
         }
     }
