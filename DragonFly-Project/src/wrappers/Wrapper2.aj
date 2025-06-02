@@ -45,6 +45,8 @@ public aspect Wrapper2 {
             &&
             (((Drone)thisJoinPoint.getArgs()[0]).isStrongWind())
             &&
+            (((Drone)thisJoinPoint.getArgs()[0]).isStrongRain())
+            &&
             (((Drone)thisJoinPoint.getArgs()[0]).getDistanceDestiny() <=60)
             ){
         keepFlying(thisJoinPoint);
