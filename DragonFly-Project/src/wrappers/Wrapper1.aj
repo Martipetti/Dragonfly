@@ -3,17 +3,12 @@ package wrappers;
 import controller.DroneController;
 import controller.EnvironmentController;
 import controller.LoggerController;
-import javafx.application.Platform;
-import javafx.concurrent.Task;
+import metrics.AdaptationMetricsTracker;
 import model.entity.drone.Drone;
 import model.entity.drone.DroneBusinessObject;
 import org.aspectj.lang.JoinPoint;
 import view.CellView;
 import view.drone.DroneView;
-import view.river.RiverView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public aspect Wrapper1 {
 
@@ -30,7 +25,14 @@ public aspect Wrapper1 {
     &&
     (((Drone)thisJoinPoint.getArgs()[0]).isOnWater())
     ){
+
+        Drone drone = (Drone) thisJoinPoint.getArgs()[0];
+        String label = drone.getLabel();
+        AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
         moveASide(thisJoinPoint);
+        AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
+        AdaptationMetricsTracker.getInstance().updateFailureAvoided(label);
+        AdaptationMetricsTracker.getInstance().logMetrics(label);
     }
 
 
@@ -69,6 +71,7 @@ public aspect Wrapper1 {
 
         System.out.println("Drone["+drone.getLabel()+"] "+"Move Aside");
         LoggerController.getInstance().print("Drone["+drone.getLabel()+"] "+"Move Aside");
+        AdaptationMetricsTracker.getInstance().markEvent(drone.getLabel() + "_reaction");
 
         while (drone.isOnWater()) {
             String goDirection = DroneBusinessObject.closeDirection(droneView.getCurrentCellView(), closerLandCellView);
