@@ -58,6 +58,10 @@ public abstract class DroneController {
 
     abstract public void consumeNormalWind();
 
+    abstract public void consumeStrongRain();
+
+    abstract public void consumeNormalRain();
+
     abstract public void consumeReset();
 
     abstract public void startUpdateBatteryPerSeconds();

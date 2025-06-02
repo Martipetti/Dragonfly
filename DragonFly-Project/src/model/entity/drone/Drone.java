@@ -46,6 +46,7 @@ public class Drone extends Entity {
     private Double distanceSource;
     private Double distanceDestiny;
     private Boolean isStrongWind =false;
+    private Boolean isStrongRain = false;
     private Boolean isAutomatic = false;
     private Boolean isManual = true;
     private Boolean isGoingManualToDestiny = true;
@@ -268,6 +269,10 @@ public class Drone extends Entity {
         return isStrongWind;
     }
 
+    public boolean isStrongRain() {
+        return isStrongRain;
+    }
+
     public boolean isAutomatic() {
         return isAutomatic;
     }
@@ -344,6 +349,17 @@ public class Drone extends Entity {
         this.isStrongWind = isStrongWind;
 
         notifiesListeners(Thread.currentThread().getStackTrace()[1].getMethodName(),oldValue, newValue);
+    }
+
+    public void setStrongRain(boolean isStrongRain) {
+        boolean oldValue = this.isStrongRain;
+
+        if(oldValue == isStrongRain) {
+            return;
+        }
+
+        this.isStrongRain = isStrongRain;
+        notifiesListeners(Thread.currentThread().getStackTrace()[1].getMethodName(), oldValue, isStrongRain);
     }
 
     public void setIsAutomatic(boolean isAutomatic) {

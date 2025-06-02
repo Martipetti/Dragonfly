@@ -68,6 +68,10 @@ public class MainController extends Application {
     private
     ComboBox windForceCombBox;
 
+    @FXML
+    private
+    ComboBox rainForceCombBox;
+
 
     private boolean running = false;
     private boolean droneToggleButtonIsSelected = false;
@@ -90,7 +94,7 @@ public class MainController extends Application {
 
         menuControler = new MenuController(rootAnchorPane, primaryStage);
 
-        Scene scene = new Scene(rootAnchorPane, 903, 705);
+        Scene scene = new Scene(rootAnchorPane, 903, 750);
 
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -139,9 +143,9 @@ public class MainController extends Application {
         forceWindTypes.add("Slow");
         forceWindTypes.add("Random");
 
-        ObservableList<String> nameOptions =
+        ObservableList<String> nameOptionsWind =
                 FXCollections.observableArrayList(forceWindTypes);
-        windForceCombBox.setItems(nameOptions);
+        windForceCombBox.setItems(nameOptionsWind);
 
         windForceCombBox.getSelectionModel().select(1);
 
@@ -154,6 +158,29 @@ public class MainController extends Application {
                 environmentController.consumeNormalWind();
             }else if(newValue.equals("Random")){
                 environmentController.consumeRandomWind();
+            }
+        });
+
+        List<String> forceRainTypes = new ArrayList<>();
+        forceRainTypes.add("Strong");
+        forceRainTypes.add("Slow");
+        forceRainTypes.add("Random");
+
+        ObservableList<String> nameOptionsRain =
+                FXCollections.observableArrayList(forceRainTypes);
+        rainForceCombBox.setItems(nameOptionsRain);
+
+        rainForceCombBox.getSelectionModel().select(1);
+
+        rainForceCombBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(oldValue.equals(newValue)){return;}
+
+            if(newValue.equals("Strong")){
+                environmentController.consumeStrongRain();
+            }else if(newValue.equals("Slow")){
+                environmentController.consumeNormalRain();
+            }else if(newValue.equals("Random")){
+                environmentController.consumeRandomRain();
             }
         });
 

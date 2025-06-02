@@ -66,6 +66,8 @@ public aspect Wrapper3 {
             &&
             (((Drone)thisJoinPoint.getArgs()[0]).isStrongWind())
             &&
+            (((Drone)thisJoinPoint.getArgs()[0]).isStrongRain())
+            &&
             (((Drone)thisJoinPoint.getArgs()[0]).getDistanceDestiny() <=60)
             &&
             (existEnableBoatToSoS((Drone)thisJoinPoint.getArgs()[0]) == false)

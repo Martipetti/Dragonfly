@@ -202,8 +202,19 @@ public class DroneAutomaticController extends DroneController {
         }
     }
 
+    @Override
+    public void consumeStrongRain() {
+        for(Drone drone: droneMap.values()){
+            DroneBusinessObject.setStrongRain(drone);
+        }
+    }
 
-
+    @Override
+    public void consumeNormalRain() {
+        for(Drone drone: droneMap.values()){
+            DroneBusinessObject.setNormalRain(drone);
+        }
+    }
 
     //não estou usando mais, depois apagar
     @Override

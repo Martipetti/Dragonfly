@@ -319,6 +319,7 @@ public class DroneViewImpl extends DroneView {
             updadePositionDroneView(drone);
             // updateItIsOver(drone);
             DroneBusinessObject.updateItIsOver(drone);
+            loggerController.print("Drone[" + getDroneLabel() + "] " + "Destiny distance: " + drone.getDistanceDestiny());
 
 
 

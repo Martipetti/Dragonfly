@@ -16,14 +16,14 @@ public class EnvironmentView {
     private GridPane gridpane = new GridPane();
     private AnchorPane envivonmentAnchorPane;
     private KeyCode keySelected;
-    private ImageView windImagemView = new ImageView(new Image("/view/res/wind.png"));
+    private ImageView windImageView = new ImageView(new Image("/view/res/wind.png"));
+    private ImageView rainImageView = new ImageView(new Image("/view/res/rain.png"));
     private  CellController cellController = CellController.getInstance();
 
     public EnvironmentView(Cell cell, AnchorPane envivonmentAnchorPane) {
-        new EnvironmentView(cell, envivonmentAnchorPane);
+        //new EnvironmentView(cell, envivonmentAnchorPane);
         cellController.init(this);
         gridpane.setFocusTraversable(true);
-
     }
 
     public void notifyclearEnverionment() {
@@ -32,6 +32,7 @@ public class EnvironmentView {
 
 
     public EnvironmentView(int countRow, int countColunm, AnchorPane environmentAnchorPane) {
+        gridpane.setLayoutY(35);
 
         for(int i = 0; i < countColunm; i++) {
             ColumnConstraints column = new ColumnConstraints(30);
@@ -91,15 +92,28 @@ public class EnvironmentView {
     }
 */
     public void applyStrongWind() {
-        if(!envivonmentAnchorPane.getChildren().contains(windImagemView)){
-            envivonmentAnchorPane.getChildren().add(windImagemView);
+        if(!envivonmentAnchorPane.getChildren().contains(windImageView)){
+            envivonmentAnchorPane.getChildren().add(windImageView);
         }
 
     }
 
     public void removeStrongWind() {
-        if(envivonmentAnchorPane.getChildren().contains(windImagemView)){
-            envivonmentAnchorPane.getChildren().remove(windImagemView);
+        if(envivonmentAnchorPane.getChildren().contains(windImageView)){
+            envivonmentAnchorPane.getChildren().remove(windImageView);
+        }
+    }
+
+    public void applyStrongRain() {
+        if(!envivonmentAnchorPane.getChildren().contains(rainImageView)) {
+            rainImageView.setX(35);
+            envivonmentAnchorPane.getChildren().add(rainImageView);
+        }
+    }
+
+    public void removeStrongRain() {
+        if(envivonmentAnchorPane.getChildren().contains(rainImageView)){
+            envivonmentAnchorPane.getChildren().remove(rainImageView);
         }
     }
 }
