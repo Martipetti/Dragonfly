@@ -73,7 +73,7 @@
                </image>
             </ImageView>
             <ToggleButton fx:id="houseToggleButton" layoutX="60.0" layoutY="84.0" mnemonicParsing="false" text="House" />
-            <ToggleButton fx:id="treeToggleButton" layoutX="145.0" layoutY="84.0" mnemonicParsing="false" text="Tree" />
+            <ToggleButton fx:id="obstacleToggleButton" layoutX="145.0" layoutY="84.0" mnemonicParsing="false" text="Obstacle" />
             <ComboBox fx:id="windForceCombBox" layoutX="80.0" layoutY="157.0" prefWidth="150.0" />
             <ComboBox fx:id="rainForceCombBox" layoutX="80.0" layoutY="192.0" prefWidth="150.0" />
 

@@ -6,7 +6,9 @@ import controller.CellController;
 import javafx.scene.input.KeyCode;
 import model.Cell;
 import model.entity.Entity;
+import view.CellView;
 import view.SelectableView;
+import view.obstacle.ObstacleView;
 import view.river.RiverView;
 
 import java.lang.reflect.Field;
@@ -57,7 +59,7 @@ public class Drone extends Entity {
 
     private Boolean selected = false;
 
-
+    private List<SelectableView> aroundList = new ArrayList<>(); // two cells around
     private List<SelectableView> onTopOfList = new ArrayList<>();
     private List<Listener> listeners = new ArrayList<>();
     private KeyCode directionCommand;
@@ -421,10 +423,13 @@ public class Drone extends Entity {
         notifiesListeners(Thread.currentThread().getStackTrace()[1].getMethodName(),oldValue, newValue);
     }
 
+    public List<SelectableView> getAroundList() {return aroundList;}
+    public void addAround(SelectableView around) {this.aroundList.add(around);}
+    public void setAroundList(List<SelectableView> aroundList) {this.aroundList = aroundList;}
+
     public List<SelectableView> getOnTopOfList() {
         return onTopOfList;
     }
-
     public void addOnTopOfDroneList(SelectableView onTopOf) {
         this.onTopOfList.add(onTopOf);
     }
@@ -603,9 +608,53 @@ public class Drone extends Entity {
         if(onTopOfList.isEmpty()){
             return false;
         }
+
         for(Object object :onTopOfList){
             if(object instanceof RiverView){
                 return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean hasObstaclesInFront() {
+        System.out.println(aroundList);
+        if (aroundList.isEmpty()) {
+            return false;
+        }
+
+        int nextI = currentPositionI;
+        int nextJ = currentPositionJ;
+
+        switch (directionCommand) {
+            case W:
+                nextI -= 2;
+                break;
+            case S:
+                nextI += 2;
+                break;
+            case A:
+                nextJ -= 2;
+                break;
+            case D:
+                nextJ += 2;
+                break;
+            default:
+                return false;
+        }
+
+        System.out.print("puercodios");
+
+        for (SelectableView view : aroundList) {
+            if (view instanceof ObstacleView) {
+                CellView cellView = view.getCurrentCellView();
+                int viewI = cellView.getRowPosition();
+                int viewJ = cellView.getCollunmPosition();
+
+                if (viewI == nextI && viewJ == nextJ) {
+                    return true;
+                }
             }
         }
 
@@ -634,10 +683,8 @@ public class Drone extends Entity {
     }
 
     public void setFlyDirectionCommand(KeyCode directionCommand){
-
         KeyCode oldValue = this.directionCommand;
         KeyCode newValue = directionCommand;
-
 
         this.directionCommand = directionCommand;
 

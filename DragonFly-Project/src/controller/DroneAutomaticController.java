@@ -1,6 +1,8 @@
 package controller;
 
 import javafx.application.Platform;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import model.Cell;
 import model.entity.Hospital;
@@ -239,26 +241,6 @@ public class DroneAutomaticController extends DroneController {
                 return allTheDronesAreShutDown() || mustStopBatteryDecrementer;
             }
         };
-    /*    Runnable runnable = () -> {
-            System.out.println("PerSeconds inicio" + Thread.currentThread().getName());
-            if(allTheDronesAreShutDown()){
-                stopWatchBattery.stop();
-            }
-
-            for(Drone currentDroneInEnvirionment : dronesInEnvironment){
-
-                DroneBusinessObject.updateBatteryPerSecond(currentDroneInEnvirionment);
-
-                DroneBusinessObject.checkStatus(currentDroneInEnvirionment);
-                System.out.println("PerSeconds fim" + Thread.currentThread().getName());
-            }
-        };
-
-
-        stopWatchBattery = new StopWatch(0,1000, runnable);
-
-        stopWatchBattery.start();*/
-
     }
 
     @Override
@@ -339,6 +321,7 @@ public class DroneAutomaticController extends DroneController {
 
         if (tempDistance < newDistanceDestiny) {
             newDistanceDestiny = tempDistance;
+            drone.setFlyDirectionCommand(KeyCode.D);
             mustGO = "->";
         }
 
@@ -346,6 +329,7 @@ public class DroneAutomaticController extends DroneController {
 
         if (tempDistance < newDistanceDestiny) {
             newDistanceDestiny = tempDistance;
+            drone.setFlyDirectionCommand(KeyCode.A);
             mustGO = "<-";
         }
 
@@ -354,6 +338,7 @@ public class DroneAutomaticController extends DroneController {
 
         if (tempDistance < newDistanceDestiny) {
             newDistanceDestiny = tempDistance;
+            drone.setFlyDirectionCommand(KeyCode.W);
             mustGO = "/\\";
 
         }
@@ -362,6 +347,7 @@ public class DroneAutomaticController extends DroneController {
 
         if (tempDistance < newDistanceDestiny) {
             newDistanceDestiny = tempDistance;
+            drone.setFlyDirectionCommand(KeyCode.S);
             mustGO = "\\/";
 
         }

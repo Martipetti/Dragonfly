@@ -22,6 +22,7 @@ import view.boat.BoatView;
 import view.drone.DroneView;
 import view.hospital.HospitalView;
 import view.house.HouseView;
+import view.obstacle.ObstacleView;
 import view.river.RiverView;
 
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class MainController extends Application {
 
     @FXML
     private
-    ToggleButton riverToggleButton, hospitalToggleButton, droneToggleButton, antennaToggleButton, boatToggleButton, houseToggleButton, treeToggleButton;
+    ToggleButton riverToggleButton, hospitalToggleButton, droneToggleButton, antennaToggleButton, boatToggleButton, houseToggleButton, obstacleToggleButton;
 
     @FXML
     AnchorPane defaultPanelSettingsAnchorPane;
@@ -129,7 +130,7 @@ public class MainController extends Application {
         riverToggleButton.setToggleGroup(toggleGroup1);
         hospitalToggleButton.setToggleGroup(toggleGroup1);
         houseToggleButton.setToggleGroup(toggleGroup1);
-        treeToggleButton.setToggleGroup(toggleGroup1);
+        obstacleToggleButton.setToggleGroup(toggleGroup1);
         droneToggleButton.setToggleGroup(toggleGroup1);
         antennaToggleButton.setToggleGroup(toggleGroup1);
         boatToggleButton.setToggleGroup(toggleGroup1);
@@ -227,7 +228,7 @@ public class MainController extends Application {
             riverToggleButton.setSelected(false);
             hospitalToggleButton.setSelected(false);
             houseToggleButton.setSelected(false);
-            treeToggleButton.setSelected(false);
+            obstacleToggleButton.setSelected(false);
             antennaToggleButton.setSelected(false);
             droneToggleButton.setSelected(false);
             boatToggleButton.setSelected(false);
@@ -277,7 +278,7 @@ public class MainController extends Application {
                 antennaToggleButton.setSelected(false);
                 hospitalToggleButton.setSelected(false);
                 houseToggleButton.setSelected(false);
-                treeToggleButton.setSelected(false);
+                obstacleToggleButton.setSelected(false);
                 boatToggleButton.setSelected(false);
                 automaticExecutionCheckBox.setSelected(false);
                 environmentController.consumeCleanEnverionment();
@@ -323,9 +324,9 @@ public class MainController extends Application {
                     HouseController.getInstance().deleteHouse(house);
 
                 }
-                else if( selectableView instanceof TreeView){
-                    Tree tree = TreeController.getInstance().getTreeFrom(selectableView.getUniqueID());
-                    TreeController.getInstance().deleteTree(tree);
+                else if( selectableView instanceof ObstacleView){
+                    Obstacle obstacle = ObstacleController.getInstance().getObstacleFrom(selectableView.getUniqueID());
+                    ObstacleController.getInstance().deleteObstacle(obstacle);
 
                 }
             }
@@ -406,7 +407,7 @@ public class MainController extends Application {
     private boolean mustCreateEntitiesView() {
         return riverToggleButton.isSelected() || hospitalToggleButton.isSelected() || antennaToggleButton.isSelected()
                 || droneToggleButton.isSelected() || boatToggleButton.isSelected() || houseToggleButton.isSelected()
-                || treeToggleButton.isSelected();
+                || obstacleToggleButton.isSelected();
     }
 
     private void createEntitiesView(CellView selectedCellView) {
@@ -448,8 +449,8 @@ public class MainController extends Application {
         }else if(houseToggleButton.isSelected()){
             environmentController.createHouse(selectedCellView);
         }
-        else if(treeToggleButton.isSelected()){
-            environmentController.createTree(selectedCellView);
+        else if(obstacleToggleButton.isSelected()){
+            environmentController.createObstacle(selectedCellView);
         }
 
             }catch (Exception e){
@@ -474,7 +475,7 @@ public class MainController extends Application {
         deleteButton.setDisable(true);
         cleanButton.setDisable(true);
         automaticExecutionCheckBox.setDisable(true);
-        treeToggleButton.setDisable(true);
+        obstacleToggleButton.setDisable(true);
     }
 
     private void enableEnvironmentSettingViews() {
@@ -488,7 +489,7 @@ public class MainController extends Application {
         deleteButton.setDisable(false);
         cleanButton.setDisable(false);
         automaticExecutionCheckBox.setDisable(false);
-        treeToggleButton.setDisable(false);
+        obstacleToggleButton.setDisable(false);
     }
 
 

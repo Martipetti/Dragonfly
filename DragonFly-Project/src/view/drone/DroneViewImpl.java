@@ -19,6 +19,7 @@ import view.EnvironmentView;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Logger;
 
 
 public class DroneViewImpl extends DroneView {
@@ -319,10 +320,12 @@ public class DroneViewImpl extends DroneView {
             updadePositionDroneView(drone);
             // updateItIsOver(drone);
             DroneBusinessObject.updateItIsOver(drone);
+            DroneBusinessObject.updateAround(drone);
+
+            System.out.println(drone.hasObstaclesInFront());
+
+            //loggerController.print("Drone[" + getDroneLabel() + "] " + "Around objects: " + drone.getAroundList());
             loggerController.print("Drone[" + getDroneLabel() + "] " + "Destiny distance: " + drone.getDistanceDestiny());
-
-
-
 
             return;
         }

@@ -144,6 +144,14 @@ public class DroneBusinessObject {
 
     }
 
+    public static void checkObstaclesPerBlock(Drone drone) {
+        if (drone.isShutDown() || drone.isGoingManualToDestiny()) {
+            return;
+        }
+
+
+    }
+
     public static void updateBatteryPerSecond(Drone drone) {
         //  synchronized (lock){
         //System.out.println("PerSecond");
@@ -540,8 +548,14 @@ public class DroneBusinessObject {
         DroneView droneView = DroneController.getInstance().getDroneViewFrom(drone.getUniqueID());
 
         List<SelectableView> selectableViewList = CellController.getInstance().getOverSelectableView(droneView);
-
         drone.setOnTopOfList(selectableViewList);
+    }
+
+    public static void updateAround(Drone drone) {
+        DroneView droneView = DroneController.getInstance().getDroneViewFrom(drone.getUniqueID());
+
+        List<SelectableView> selectableViewList = CellController.getInstance().getAroundSelectableViews(droneView, 2);
+        drone.setAroundList(selectableViewList);
     }
 
     /*public void goDestinyAutomatic() {
