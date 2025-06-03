@@ -1,23 +1,8 @@
-# Dragonfly
+# Dragonfly-extended
 
-#### SEAMS 2019 artifact
-Dragonfly simulates the self-adaptive drone's behaviour with and without a wrapper solution during its flight from a source to a target hospital.  
+This system is based on [Dragonly](https://github.com/DragonflyDrone/Dragonfly) project with an extension for 2 uncertenty in the managed system (rain in the environment and obstacle detection).
 
-## Summary
-This repository contains all resources from Dragonfly, submitted to Artifacts track at SEAMS 2019. It consists of an executable simulator for self-adaptive drones, its source code and a demonstration video. This text provides instructions on how to use the simulator.
-
-As described in the camera ready paper in more details, the purpose of this artifact is to simulatE a drone flight between two hospitals to delivery an organ payload. By using this simulation, it is possible to observe the differences between the behaviours of the original implementation of the drone and the drone with a wrapper solution developed using aspect-oriented programming.
-
-The simulator is implemented in Java, uses the JavaFX technology for the Graphical User Interface, and AspectJ for aspect implementation and weaving.
-
-## Artifact structure
-This repository contains the following items:
-
-- **README.md** - This text as Markdown.
-- **LICENSE.md** - BSD 2-Clause License.
-- **index.html** - This text as HTML.
-- **DragonFly-Project/src/** - Source directory containing the SEAMS demo application code.
-- **ExecuteApplication/** - Directory including Docker image and .JAR files for executing in Ubuntu and Windows, each one having its proper instructions to run.
+The simulator is implemented in Java, uses the JavaFX technology for the Graphical User Interface, and AspectJ for aspect implementation and weaving. More information on the original project github repository.
 
 ## Development requirements
 To run the code you need a version of **Java 8 in which JavaFX is packaged** (or add this dependency manually). It is also necessary to add AspectJ as a dependency.
@@ -25,12 +10,12 @@ To facilitate configuration, the following link contains the version of the depe
 
 Link: https://drive.google.com/drive/folders/1Zs2ftZSutymb8AwVx3AYNbWYDZWmdn8o?usp=sharing
 
-## Requirements to run
-The executable artifact is available in both a single JAR format and Docker images to run on Windows 10 or Ubuntu machines. Note that the artifact may run on other Windows and Linux versions, but it was not extensively tested in all operating systems.
+To correcly run the project it is possible tio watch the file in previous folder with some notes:
+- Intall and use the liberica-full-1.8 sdk (it is possible to intall it throught IntelliJ and there is inside JavaFx).
+- Use the Intellij ultimate edition (free with scholar licence).
+- Intall the AscpectJ plug-in before the setting procedure.
+- Once the configuraiton procedure is done, run the mainCOntroller class.
 
-
-## Getting started 
-The easiest way to run the artifact is by running the .JAR file, since it only needs a Java Runtime Environment (JRE) installed to work. To run using Docker images, there are files named "Steps.txt" inside the "Docker" directory, which is located in "ExecuteApplication/Ubuntu" and also in "ExecuteApplication/Windows" directories. In this file, a step-by-step for configuring Docker to run the application using its container image is described.
 
 ## Running the Simulator - Step-by-step
 
