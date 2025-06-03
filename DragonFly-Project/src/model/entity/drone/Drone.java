@@ -619,7 +619,6 @@ public class Drone extends Entity {
     }
 
     public boolean hasObstaclesInFront() {
-        System.out.println(aroundList);
         if (aroundList.isEmpty()) {
             return false;
         }
@@ -643,8 +642,6 @@ public class Drone extends Entity {
             default:
                 return false;
         }
-
-        System.out.print("puercodios");
 
         for (SelectableView view : aroundList) {
             if (view instanceof ObstacleView) {

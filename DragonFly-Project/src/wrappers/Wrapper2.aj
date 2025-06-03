@@ -23,6 +23,12 @@ public aspect Wrapper2 {
 
     static private Set<Drone> isGlideSet = new HashSet<>();
 
+    void around(): goDestinyAutomatic()
+            &&
+            if (((Drone)thisJoinPoint.getArgs()[0]).hasObstaclesInFront()) {
+                moveASide(thisJoinPoint);
+    }
+
 
     //estou testando isso aqui só para automático, pode ser que no manual eu tenho que lidar com mais threads
     before(): safeLanding()
