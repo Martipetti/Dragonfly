@@ -3,24 +3,20 @@ package wrappers;
 import controller.DroneController;
 import controller.EnvironmentController;
 import controller.LoggerController;
-import javafx.application.Platform;
-import javafx.concurrent.Task;
+import metrics.AdaptationMetricsTracker;
+import metrics.QoSMetricsTracker;
 import model.entity.drone.Drone;
 import model.entity.drone.DroneBusinessObject;
 import org.aspectj.lang.JoinPoint;
 import view.CellView;
 import view.drone.DroneView;
-import view.river.RiverView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public aspect Wrapper1 {
 
     pointcut safeLanding(): call (* model.entity.drone.DroneBusinessObject.safeLanding(*));
     pointcut applyEconomyMode(): call (* model.entity.drone.DroneBusinessObject.applyEconomyMode(*));
+    pointcut checkAndPrintIfLostDrone(): call (* model.entity.drone.DroneBusinessObject.checkAndPrintIfLostDrone(*));
 
-    //estou testando isso aqui só para automático, pode ser que no manual eu tenho que lidar com mais threads
     before(): safeLanding()
     && if
     (
@@ -30,24 +26,44 @@ public aspect Wrapper1 {
     &&
     (((Drone)thisJoinPoint.getArgs()[0]).isOnWater())
     ){
+
+        Drone drone = (Drone) thisJoinPoint.getArgs()[0];
+        String label = drone.getLabel();
+        AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
         moveASide(thisJoinPoint);
+        AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
+        QoSMetricsTracker.getInstance().incrementAdaptations();
     }
 
+    boolean around(): safeLanding() {
+        Drone drone = (Drone) thisJoinPoint.getArgs()[0];
+        double distance = drone.getDistanceDestiny();
+        boolean strongRain = drone.isStrongRain();
+        boolean strongWind = drone.isStrongWind();
+        int wrapper = drone.getWrapperId();
 
-   boolean around(): safeLanding()
-   && if
-   (
-   (((Drone)thisJoinPoint.getArgs()[0]).getWrapperId() == 1)
-   &&
-   (((Drone)thisJoinPoint.getArgs()[0]).getDistanceDestiny() <=60)
-   &&
-   (((Drone)thisJoinPoint.getArgs()[0]).isStrongWind())
-   &&
-   (((Drone)thisJoinPoint.getArgs()[0]).isStrongRain())
-   ){
-        keepFlying(thisJoinPoint);
-        return false;
-   }
+        if (wrapper == 1) {
+            if ((strongRain ^ strongWind) && distance <= 60) {
+                keepFlying(thisJoinPoint);
+                QoSMetricsTracker.getInstance().incrementAdaptations();
+                return false;
+            }
+
+            if (strongRain && strongWind && distance < 30) {
+                keepFlying(thisJoinPoint);
+                QoSMetricsTracker.getInstance().incrementAdaptations();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    after(): checkAndPrintIfLostDrone(){
+        String label = ((Drone) thisJoinPoint.getArgs()[0]).getLabel();
+        AdaptationMetricsTracker.getInstance().logMetrics(label);
+        QoSMetricsTracker.getInstance().logQoS(label);
+    }
+
 
     void around(): applyEconomyMode()
     &&
@@ -69,6 +85,7 @@ public aspect Wrapper1 {
 
         System.out.println("Drone["+drone.getLabel()+"] "+"Move Aside");
         LoggerController.getInstance().print("Drone["+drone.getLabel()+"] "+"Move Aside");
+        AdaptationMetricsTracker.getInstance().markEvent(drone.getLabel() + "_reaction");
 
         while (drone.isOnWater()) {
             String goDirection = DroneBusinessObject.closeDirection(droneView.getCurrentCellView(), closerLandCellView);
