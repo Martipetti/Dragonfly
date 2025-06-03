@@ -321,7 +321,7 @@ public class DroneAutomaticController extends DroneController {
 
         if (tempDistance < newDistanceDestiny) {
             newDistanceDestiny = tempDistance;
-            drone.setFlyDirectionCommand(KeyCode.D);
+            drone.setAutoFlyDirectionCommand(KeyCode.D);
             mustGO = "->";
         }
 
@@ -329,7 +329,7 @@ public class DroneAutomaticController extends DroneController {
 
         if (tempDistance < newDistanceDestiny) {
             newDistanceDestiny = tempDistance;
-            drone.setFlyDirectionCommand(KeyCode.A);
+            drone.setAutoFlyDirectionCommand(KeyCode.A);
             mustGO = "<-";
         }
 
@@ -338,7 +338,7 @@ public class DroneAutomaticController extends DroneController {
 
         if (tempDistance < newDistanceDestiny) {
             newDistanceDestiny = tempDistance;
-            drone.setFlyDirectionCommand(KeyCode.W);
+            drone.setAutoFlyDirectionCommand(KeyCode.W);
             mustGO = "/\\";
 
         }
@@ -347,7 +347,7 @@ public class DroneAutomaticController extends DroneController {
 
         if (tempDistance < newDistanceDestiny) {
             newDistanceDestiny = tempDistance;
-            drone.setFlyDirectionCommand(KeyCode.S);
+            drone.setAutoFlyDirectionCommand(KeyCode.S);
             mustGO = "\\/";
 
         }

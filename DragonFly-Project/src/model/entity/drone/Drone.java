@@ -63,6 +63,7 @@ public class Drone extends Entity {
     private List<SelectableView> onTopOfList = new ArrayList<>();
     private List<Listener> listeners = new ArrayList<>();
     private KeyCode directionCommand;
+    private KeyCode automaticDirection;
 
     public static int COUNT_DRONE = 1;
 
@@ -626,7 +627,7 @@ public class Drone extends Entity {
         int nextI = currentPositionI;
         int nextJ = currentPositionJ;
 
-        switch (directionCommand) {
+        switch (automaticDirection) {
             case W:
                 nextI -= 2;
                 break;
@@ -686,6 +687,10 @@ public class Drone extends Entity {
         this.directionCommand = directionCommand;
 
         notifiesListeners(Thread.currentThread().getStackTrace()[1].getMethodName(),oldValue, newValue);
+    }
+
+    public void setAutoFlyDirectionCommand(KeyCode automaticDirection){
+        this.automaticDirection = automaticDirection;
     }
 
     public boolean isSelected(){
