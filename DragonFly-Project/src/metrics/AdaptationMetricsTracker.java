@@ -8,7 +8,6 @@ import java.util.Map;
 public class AdaptationMetricsTracker {
     private static AdaptationMetricsTracker instance = null;
     private Map<String, Long> eventTimestamps = new HashMap<>();
-    private Map<String, Integer> failureAvoided = new HashMap<>();
 
     private AdaptationMetricsTracker() {}
 
@@ -41,24 +40,15 @@ public class AdaptationMetricsTracker {
         return -1;
     }
 
-    public void updateFailureAvoided(String id) {
-        int failureAvoidedCounter = failureAvoided.get(id);
-        if (failureAvoidedCounter > 0) {
-            failureAvoided.put(id, failureAvoidedCounter+1);
-        } else {
-            failureAvoided.put(id, 1);
-        }
-    }
-
 
     public void logMetrics(String id) {
         long reactionTime = getReactionTime(id);
         long adaptationTime = getAdaptationTime(id);
-        int failureAvoidedCounter = failureAvoided.get(id);
         if (reactionTime != -1 && adaptationTime != -1) {
             LoggerController.getInstance().print("Drone["+id+"] Reaction Time "+reactionTime+"ms");
             LoggerController.getInstance().print("Drone["+id+"] Adaptation Time "+adaptationTime+"ms");
-            LoggerController.getInstance().print("Drone["+id+"] Failure Avoided "+failureAvoidedCounter);
+        } else {
+            LoggerController.getInstance().print("Drone["+id+"] No Reaction Time and Adaptation Time found");
         }
     }
 }

@@ -4,6 +4,7 @@ import controller.DroneController;
 import controller.EnvironmentController;
 import controller.LoggerController;
 import metrics.AdaptationMetricsTracker;
+import metrics.QoSMetricsTracker;
 import model.entity.drone.Drone;
 import model.entity.drone.DroneBusinessObject;
 import org.aspectj.lang.JoinPoint;
@@ -14,8 +15,8 @@ public aspect Wrapper1 {
 
     pointcut safeLanding(): call (* model.entity.drone.DroneBusinessObject.safeLanding(*));
     pointcut applyEconomyMode(): call (* model.entity.drone.DroneBusinessObject.applyEconomyMode(*));
+    pointcut checkAndPrintIfLostDrone(): call (* model.entity.drone.DroneBusinessObject.checkAndPrintIfLostDrone(*));
 
-    //estou testando isso aqui só para automático, pode ser que no manual eu tenho que lidar com mais threads
     before(): safeLanding()
     && if
     (
@@ -31,25 +32,38 @@ public aspect Wrapper1 {
         AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
         moveASide(thisJoinPoint);
         AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
-        AdaptationMetricsTracker.getInstance().updateFailureAvoided(label);
-        AdaptationMetricsTracker.getInstance().logMetrics(label);
+        QoSMetricsTracker.getInstance().incrementAdaptations();
     }
 
+    boolean around(): safeLanding() {
+        Drone drone = (Drone) thisJoinPoint.getArgs()[0];
+        double distance = drone.getDistanceDestiny();
+        boolean strongRain = drone.isStrongRain();
+        boolean strongWind = drone.isStrongWind();
+        int wrapper = drone.getWrapperId();
 
-   boolean around(): safeLanding()
-   && if
-   (
-   (((Drone)thisJoinPoint.getArgs()[0]).getWrapperId() == 1)
-   &&
-   (((Drone)thisJoinPoint.getArgs()[0]).getDistanceDestiny() <=60)
-   &&
-   (((Drone)thisJoinPoint.getArgs()[0]).isStrongWind())
-   &&
-   (((Drone)thisJoinPoint.getArgs()[0]).isStrongRain())
-   ){
-        keepFlying(thisJoinPoint);
-        return false;
-   }
+        if (wrapper == 1) {
+            if ((strongRain ^ strongWind) && distance <= 60) {
+                keepFlying(thisJoinPoint);
+                QoSMetricsTracker.getInstance().incrementAdaptations();
+                return false;
+            }
+
+            if (strongRain && strongWind && distance < 30) {
+                keepFlying(thisJoinPoint);
+                QoSMetricsTracker.getInstance().incrementAdaptations();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    after(): checkAndPrintIfLostDrone(){
+        String label = ((Drone) thisJoinPoint.getArgs()[0]).getLabel();
+        AdaptationMetricsTracker.getInstance().logMetrics(label);
+        QoSMetricsTracker.getInstance().logQoS(label);
+    }
+
 
     void around(): applyEconomyMode()
     &&
