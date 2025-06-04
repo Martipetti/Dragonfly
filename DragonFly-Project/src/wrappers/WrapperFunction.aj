@@ -13,6 +13,7 @@ import view.drone.DroneView;
 public aspect WrapperFunction {
 
     pointcut safeLanding(): call (* model.entity.drone.DroneBusinessObject.safeLanding(*));
+    pointcut applyEconomyMode(): call (* model.entity.drone.DroneBusinessObject.applyEconomyMode(*));
 
     boolean around(): safeLanding() {
         Drone drone = (Drone) thisJoinPoint.getArgs()[0];
@@ -38,6 +39,11 @@ public aspect WrapperFunction {
                     0.075 * strongWindPenalty +
                     0.15 * waterPenalty;
 
+            LoggerController.getInstance().print("Drone["+drone.getLabel()+"] Utility Function: "+utilityFunction);
+
+            if (battery == 0){
+                return true;
+            }
             if (utilityFunction < 0.3) {
                 keepFlying(drone);
                 return false;
@@ -51,6 +57,13 @@ public aspect WrapperFunction {
             }
         }
         return true;
+    }
+
+    void around(): applyEconomyMode() {
+        Drone drone = (Drone) thisJoinPoint.getArgs()[0];
+        if (drone.getWrapperId() == 8){
+
+        }
     }
 
     private void keepFlying(Drone drone) {

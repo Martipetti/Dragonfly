@@ -65,10 +65,13 @@ public aspect Wrapper1 {
     }
 
     after(): checkAndPrintIfLostDrone(){
-        String label = ((Drone) thisJoinPoint.getArgs()[0]).getLabel();
-        AdaptationMetricsTracker.getInstance().logMetrics(label);
-        QoSMetricsTracker.getInstance().logQoS(label);
-        RuntimeCostTracker.getInstance().logRuntimeCost(label);
+        Drone drone = (Drone) thisJoinPoint.getArgs()[0];
+        if (drone.getWrapperId() == 1) {
+            String label = ((Drone) thisJoinPoint.getArgs()[0]).getLabel();
+            AdaptationMetricsTracker.getInstance().logMetrics(label);
+            QoSMetricsTracker.getInstance().logQoS(label);
+            RuntimeCostTracker.getInstance().logRuntimeCost(label);
+        }
     }
 
 
