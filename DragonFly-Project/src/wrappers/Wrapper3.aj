@@ -58,25 +58,42 @@ public aspect Wrapper3 {
 
 
 
-    boolean around(): safeLanding()
-            &&
-            if
-            (
-            (((Drone)thisJoinPoint.getArgs()[0]).getWrapperId() == 3)
-            &&
-            (((Drone)thisJoinPoint.getArgs()[0]).isStrongWind())
-            &&
-            (((Drone)thisJoinPoint.getArgs()[0]).isStrongRain())
-            &&
-            (((Drone)thisJoinPoint.getArgs()[0]).getDistanceDestiny() <=60)
-            &&
-            (existEnableBoatToSoS((Drone)thisJoinPoint.getArgs()[0]) == false)
-            ){
+    boolean around(): safeLanding() {
+        Drone drone = (Drone) thisJoinPoint.getArgs()[0];
+        boolean strongRain = drone.isStrongRain();
+        boolean strongWind = drone.isStrongWind();
+        double distance = drone.getDistanceDestiny();
 
-        keepFlying(thisJoinPoint);
-
-        return false;
+        if (drone.getWrapperId() == 3 && !existEnableBoatToSoS((Drone) thisJoinPoint.getArgs()[0])) {
+            if ((strongRain ^ strongWind) && distance <= 60) {
+                keepFlying(thisJoinPoint);
+                return false;
+            }
+            if (strongRain && strongWind && distance < 30) {
+                keepFlying(thisJoinPoint);
+                return false;
+            }
+        }
+        return true;
     }
+//            &&
+//            if
+//            (
+//            (((Drone)thisJoinPoint.getArgs()[0]).getWrapperId() == 3)
+//            &&
+//            (((Drone)thisJoinPoint.getArgs()[0]).isStrongWind())
+//            &&
+//            (((Drone)thisJoinPoint.getArgs()[0]).isStrongRain())
+//            &&
+//            (((Drone)thisJoinPoint.getArgs()[0]).getDistanceDestiny() <=60)
+//            &&
+//            (existEnableBoatToSoS((Drone)thisJoinPoint.getArgs()[0]) == false)
+//            ){
+//
+//        keepFlying(thisJoinPoint);
+//
+//        return false;
+//    }
 
 
     boolean around(): landing()
