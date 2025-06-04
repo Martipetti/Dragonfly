@@ -63,7 +63,7 @@ public class Drone extends Entity {
     private List<SelectableView> onTopOfList = new ArrayList<>();
     private List<Listener> listeners = new ArrayList<>();
     private KeyCode directionCommand;
-    private KeyCode automaticDirection;
+    private String automaticDirection;
 
     public static int COUNT_DRONE = 1;
 
@@ -619,44 +619,91 @@ public class Drone extends Entity {
         return false;
     }
 
-    public boolean hasObstaclesInFront() {
-        if (aroundList.isEmpty()) {
+    public boolean hasObstacleInDirection(String direction) {
+        if (aroundList.isEmpty() || direction == null) {
             return false;
         }
 
-        int nextI = currentPositionI;
-        int nextJ = currentPositionJ;
+        int[][] positionsToCheck = getNextCellPositions(direction);
 
-        switch (automaticDirection) {
-            case W:
-                nextI -= 2;
-                break;
-            case S:
-                nextI += 2;
-                break;
-            case A:
-                nextJ -= 2;
-                break;
-            case D:
-                nextJ += 2;
-                break;
-            default:
-                return false;
-        }
+        for (int[] pos : positionsToCheck) {
+            int i = pos[0];
+            int j = pos[1];
 
-        for (SelectableView view : aroundList) {
-            if (view instanceof ObstacleView) {
-                CellView cellView = view.getCurrentCellView();
-                int viewI = cellView.getRowPosition();
-                int viewJ = cellView.getCollunmPosition();
-
-                if (viewI == nextI && viewJ == nextJ) {
-                    return true;
+            for (SelectableView view : aroundList) {
+                if (view instanceof ObstacleView) {
+                    CellView cellView = view.getCurrentCellView();
+                    if (cellView.getRowPosition() == i && cellView.getCollunmPosition() == j) {
+                        return true;
+                    }
                 }
             }
         }
 
         return false;
+    }
+
+
+    public boolean hasObstaclesInFront() {
+        if (aroundList.isEmpty()) {
+            return false;
+        }
+
+        int[][] positionsToCheck = getNextCellPositions(automaticDirection);
+
+        for (int[] pos : positionsToCheck) {
+            int i = pos[0];
+            int j = pos[1];
+
+            for (SelectableView view : aroundList) {
+                if (view instanceof ObstacleView) {
+                    CellView cellView = view.getCurrentCellView();
+                    if (cellView.getRowPosition() == i && cellView.getCollunmPosition() == j) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private int[][] getNextCellPositions(String direction) {
+        List<int[]> positions = new ArrayList<>();
+
+        int i = currentPositionI;
+        int j = currentPositionJ;
+
+        switch (direction) {
+            case "/\\": // Su
+                positions.add(new int[]{i - 1, j});     // dritto 1
+                positions.add(new int[]{i - 2, j});     // dritto 2
+                positions.add(new int[]{i - 1, j - 1}); // diagonale sinistra
+                positions.add(new int[]{i - 1, j + 1}); // diagonale destra
+                break;
+            case "\\/": // Giù
+                positions.add(new int[]{i + 1, j});
+                positions.add(new int[]{i + 2, j});
+                positions.add(new int[]{i + 1, j - 1});
+                positions.add(new int[]{i + 1, j + 1});
+                break;
+            case "<-": // Sinistra
+                positions.add(new int[]{i, j - 1});
+                positions.add(new int[]{i, j - 2});
+                positions.add(new int[]{i - 1, j - 1});
+                positions.add(new int[]{i + 1, j - 1});
+                break;
+            case "->": // Destra
+                positions.add(new int[]{i, j + 1});
+                positions.add(new int[]{i, j + 2});
+                positions.add(new int[]{i - 1, j + 1});
+                positions.add(new int[]{i + 1, j + 1});
+                break;
+            default:
+                return new int[0][0]; // direzione non valida
+        }
+
+        return positions.toArray(new int[0][]);
     }
 
     public Boolean isLost() {
@@ -689,7 +736,8 @@ public class Drone extends Entity {
         notifiesListeners(Thread.currentThread().getStackTrace()[1].getMethodName(),oldValue, newValue);
     }
 
-    public void setAutoFlyDirectionCommand(KeyCode automaticDirection){
+    public String getAutoFlyDirectionCommand() {return automaticDirection;}
+    public void setAutoFlyDirectionCommand(String automaticDirection){
         this.automaticDirection = automaticDirection;
     }
 

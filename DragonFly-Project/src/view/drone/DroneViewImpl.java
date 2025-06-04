@@ -322,8 +322,6 @@ public class DroneViewImpl extends DroneView {
             DroneBusinessObject.updateItIsOver(drone);
             DroneBusinessObject.updateAround(drone);
 
-            System.out.println(drone.hasObstaclesInFront());
-
             //loggerController.print("Drone[" + getDroneLabel() + "] " + "Around objects: " + drone.getAroundList());
             loggerController.print("Drone[" + getDroneLabel() + "] " + "Destiny distance: " + drone.getDistanceDestiny());
 
