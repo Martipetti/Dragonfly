@@ -2,6 +2,7 @@ package controller;
 
 import javafx.application.Platform;
 import javafx.scene.input.KeyEvent;
+import metrics.RuntimeCostTracker;
 import model.Cell;
 import model.entity.Hospital;
 import model.entity.drone.Drone;
@@ -41,6 +42,7 @@ public class DroneAutomaticController extends DroneController {
 
         Platform.runLater(() -> {
         for (Drone drone : droneMap.values()) {
+            RuntimeCostTracker.getInstance().startCycle(drone.getLabel());
             drone.setIsAutomatic(true);
             drone.setIsManual(false);
             DroneBusinessObject.notifyRunEnviroment(drone);
@@ -381,6 +383,7 @@ public class DroneAutomaticController extends DroneController {
 
         for (Drone drone : droneMap.values()) {
             isShutdown = isShutdown && drone.isShutDown();
+            RuntimeCostTracker.getInstance().endCycle(drone.getLabel());
         }
 
         return isShutdown;
