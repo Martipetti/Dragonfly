@@ -41,17 +41,22 @@ public aspect Wrapper1 {
         boolean strongRain = drone.isStrongRain();
         boolean strongWind = drone.isStrongWind();
         int wrapper = drone.getWrapperId();
+        String label = drone.getLabel();
 
         if (wrapper == 1) {
             if ((strongRain ^ strongWind) && distance <= 60) {
+                AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
                 keepFlying(thisJoinPoint);
                 QoSMetricsTracker.getInstance().incrementAdaptations();
+                AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
                 return false;
             }
 
             if (strongRain && strongWind && distance < 30) {
+                AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
                 keepFlying(thisJoinPoint);
                 QoSMetricsTracker.getInstance().incrementAdaptations();
+                AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
                 return false;
             }
         }
@@ -99,6 +104,7 @@ public aspect Wrapper1 {
         Drone drone = (Drone) thisJoinPoint.getArgs()[0];
         //drone.setEconomyMode(false);
         System.out.println("Drone["+drone.getLabel()+"] "+"Keep Flying");
+        AdaptationMetricsTracker.getInstance().markEvent(drone.getLabel() + "_reaction");
         LoggerController.getInstance().print("Drone["+drone.getLabel()+"] "+"Keep Flying");
     }
 

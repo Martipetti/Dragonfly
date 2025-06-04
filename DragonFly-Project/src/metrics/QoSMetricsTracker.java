@@ -43,6 +43,15 @@ public class QoSMetricsTracker {
         double score = (missionsCompleted * 2.0) + (waterAvoided * 1.5) + (adaptationsPerformed * 1.0)
                 - (missionsFailed * 2.0) - (goodsLoosed * 3.0);
         LoggerController.getInstance().print("  Quality of service score: " + score);
+        clear();
+    }
+
+    private void clear() {
+        missionsCompleted = 0;
+        missionsFailed = 0;
+        adaptationsPerformed = 0;
+        waterAvoided = 0;
+        goodsLoosed = 0;
     }
 
 }

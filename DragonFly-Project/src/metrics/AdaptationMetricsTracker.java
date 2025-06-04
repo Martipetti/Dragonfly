@@ -8,6 +8,7 @@ import java.util.Map;
 public class AdaptationMetricsTracker {
     private static AdaptationMetricsTracker instance = null;
     private Map<String, Long> eventTimestamps = new HashMap<>();
+    private int adaptation = 1;
 
     private AdaptationMetricsTracker() {}
 
@@ -19,21 +20,25 @@ public class AdaptationMetricsTracker {
     }
 
     public void markEvent(String key) {
-        eventTimestamps.put(key, System.currentTimeMillis());
+        String adaptationKey = key + "_" + adaptation;
+        if (key.contains("_completion")) {
+            adaptation++;
+        }
+        eventTimestamps.put(adaptationKey, System.currentTimeMillis());
     }
 
-    private long getReactionTime(String id) {
-        Long detection = eventTimestamps.get(id + "_anomaly");
-        Long reaction = eventTimestamps.get(id + "_reaction");
+    private long getReactionTime(String id, int adaptation) {
+        Long detection = eventTimestamps.get(id + "_anomaly" + "_" + adaptation);
+        Long reaction = eventTimestamps.get(id + "_reaction" + "_" + adaptation);
         if (detection != null && reaction != null) {
             return reaction - detection;
         }
         return -1;
     }
 
-    private long getAdaptationTime(String id) {
-        Long detection = eventTimestamps.get(id + "_anomaly");
-        Long completion = eventTimestamps.get(id + "_completion");
+    private long getAdaptationTime(String id, int adaptation) {
+        Long detection = eventTimestamps.get(id + "_anomaly" + "_" + adaptation);
+        Long completion = eventTimestamps.get(id + "_completion" + "_" + adaptation);
         if (detection != null && completion != null) {
             return completion - detection;
         }
@@ -42,13 +47,24 @@ public class AdaptationMetricsTracker {
 
 
     public void logMetrics(String id) {
-        long reactionTime = getReactionTime(id);
-        long adaptationTime = getAdaptationTime(id);
-        if (reactionTime != -1 && adaptationTime != -1) {
-            LoggerController.getInstance().print("Drone["+id+"] Reaction Time "+reactionTime+"ms");
-            LoggerController.getInstance().print("Drone["+id+"] Adaptation Time "+adaptationTime+"ms");
-        } else {
-            LoggerController.getInstance().print("Drone["+id+"] No Reaction Time and Adaptation Time found");
+        int adaptation = 1;
+
+        while (true) {
+            long reactionTime = getReactionTime(id, adaptation);
+            long adaptationTime = getAdaptationTime(id, adaptation);
+            if (reactionTime != -1 && adaptationTime != -1) {
+                LoggerController.getInstance().print("Drone["+id+"] Reaction Time "+reactionTime+"ms");
+                LoggerController.getInstance().print("Drone["+id+"] Adaptation Time "+adaptationTime+"ms");
+            } else {
+                break;
+            }
+            adaptation++;
         }
+        clear();
+    }
+
+    private void clear() {
+        eventTimestamps.clear();
+        adaptation = 1;
     }
 }

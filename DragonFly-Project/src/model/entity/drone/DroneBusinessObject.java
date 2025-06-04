@@ -1158,7 +1158,7 @@ public class DroneBusinessObject {
         }
         if (drone.getDistanceDestiny() == 0) {
             System.out.println("Drone[" + drone.getLabel() + "] " + "Arrived at destination");
-            LoggerController.getInstance().print("Drone[" + drone.getLabel() + "]" + "Arrived at destination");
+            LoggerController.getInstance().print("Drone[" + drone.getLabel() + "] " + "Arrived at destination");
             QoSMetricsTracker.getInstance().incrementMissionCompleted();
             return;
         }
