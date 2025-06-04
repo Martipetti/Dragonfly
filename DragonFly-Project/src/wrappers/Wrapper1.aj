@@ -5,6 +5,7 @@ import controller.EnvironmentController;
 import controller.LoggerController;
 import metrics.AdaptationMetricsTracker;
 import metrics.QoSMetricsTracker;
+import metrics.RuntimeCostTracker;
 import model.entity.drone.Drone;
 import model.entity.drone.DroneBusinessObject;
 import org.aspectj.lang.JoinPoint;
@@ -32,7 +33,7 @@ public aspect Wrapper1 {
         AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
         moveASide(thisJoinPoint);
         AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
-        QoSMetricsTracker.getInstance().incrementAdaptations();
+        QoSMetricsTracker.getInstance().incrementAdaptations(label);
     }
 
     boolean around(): safeLanding() {
@@ -47,7 +48,7 @@ public aspect Wrapper1 {
             if ((strongRain ^ strongWind) && distance <= 60) {
                 AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
                 keepFlying(thisJoinPoint);
-                QoSMetricsTracker.getInstance().incrementAdaptations();
+                QoSMetricsTracker.getInstance().incrementAdaptations(label);
                 AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
                 return false;
             }
@@ -55,7 +56,7 @@ public aspect Wrapper1 {
             if (strongRain && strongWind && distance < 30) {
                 AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
                 keepFlying(thisJoinPoint);
-                QoSMetricsTracker.getInstance().incrementAdaptations();
+                QoSMetricsTracker.getInstance().incrementAdaptations(label);
                 AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
                 return false;
             }
@@ -67,6 +68,7 @@ public aspect Wrapper1 {
         String label = ((Drone) thisJoinPoint.getArgs()[0]).getLabel();
         AdaptationMetricsTracker.getInstance().logMetrics(label);
         QoSMetricsTracker.getInstance().logQoS(label);
+        RuntimeCostTracker.getInstance().logRuntimeCost(label);
     }
 
 

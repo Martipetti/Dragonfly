@@ -1153,17 +1153,17 @@ public class DroneBusinessObject {
         if (drone.isReturningToHome() && drone.getDistanceSource() == 0) {
             System.out.println("Drone[" + drone.getLabel() + "] " + "Return to home completed successfully");
             LoggerController.getInstance().print("Drone[" + drone.getLabel() + "] " + "Return to home completed successfully");
-            QoSMetricsTracker.getInstance().incrementMissionFailed();
+            QoSMetricsTracker.getInstance().incrementMissionFailed(drone.getLabel());
             return;
         }
         if (drone.getDistanceDestiny() == 0) {
             System.out.println("Drone[" + drone.getLabel() + "] " + "Arrived at destination");
             LoggerController.getInstance().print("Drone[" + drone.getLabel() + "] " + "Arrived at destination");
-            QoSMetricsTracker.getInstance().incrementMissionCompleted();
+            QoSMetricsTracker.getInstance().incrementMissionCompleted(drone.getLabel());
             return;
         }
         if (drone.getDistanceDestiny() != 0 && drone.getDistanceSource() != 0) {
-            QoSMetricsTracker.getInstance().incrementMissionFailed();
+            QoSMetricsTracker.getInstance().incrementMissionFailed(drone.getLabel());
         }
 
        /* if(drone.isGoingManualToDestiny()){
@@ -1175,8 +1175,8 @@ public class DroneBusinessObject {
         if (drone.isOnWater()) {
             System.out.println("Drone[" + drone.getLabel() + "] " + "Drone landed on water");
             LoggerController.getInstance().print("Drone[" + drone.getLabel() + "] " + "Drone landed on water");
-            QoSMetricsTracker.getInstance().incrementMissionFailed();
-            QoSMetricsTracker.getInstance().incrementGoodsLoosed();
+            QoSMetricsTracker.getInstance().incrementMissionFailed(drone.getLabel());
+            QoSMetricsTracker.getInstance().incrementGoodsLoosed(drone.getLabel());
         } else {
             System.out.println("Drone[" + drone.getLabel() + "] " + "Drone landed successfully");
             LoggerController.getInstance().print("Drone[" + drone.getLabel() + "] " + "Drone landed successfully");
