@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
+import metrics.FailureAvoidanceMetricTracker;
 import metrics.RuntimeCostTracker;
 import model.Cell;
 import model.entity.Hospital;
@@ -368,7 +369,7 @@ public class DroneAutomaticController extends DroneController {
             isShutdown = isShutdown && drone.isShutDown();
             RuntimeCostTracker.getInstance().endCycle(drone.getLabel());
         }
-
+        FailureAvoidanceMetricTracker.getInstance().logFailureAvoidance();
         return isShutdown;
     }
 
