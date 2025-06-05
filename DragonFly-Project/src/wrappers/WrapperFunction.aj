@@ -19,19 +19,20 @@ public aspect WrapperFunction {
         Drone drone = (Drone) thisJoinPoint.getArgs()[0];
         int wrapper = drone.getWrapperId();
 
-        double distance = drone.getDistanceDestiny();
-        double totalDistance = drone.getDistanceSource() + distance;
-        double distanceFactor = distance/totalDistance;
-
-        double battery = drone.getCurrentBattery();
-        double totalBattery = drone.getInitialBattery();
-        double batteryFactor = 1 - (battery / totalBattery);
-
-        double strongWindPenalty = drone.isStrongWind() ? 1 : 0;
-        double strongRainPenalty = drone.isOnWater() ? 1 : 0;
-        double waterPenalty = drone.isOnWater() ? 1 : 0;
-
         if (wrapper == 8) {
+
+            double distance = drone.getDistanceDestiny();
+            double totalDistance = drone.getDistanceSource() + distance;
+            double distanceFactor = distance/totalDistance;
+
+            double battery = drone.getCurrentBattery();
+            double totalBattery = drone.getInitialBattery();
+            double batteryFactor = 1 - (battery / totalBattery);
+
+            double strongWindPenalty = drone.isStrongWind() ? 1 : 0;
+            double strongRainPenalty = drone.isOnWater() ? 1 : 0;
+            double waterPenalty = drone.isOnWater() ? 1 : 0;
+
             double utilityFunction =
                     0.3 * distanceFactor +
                     0.4 * batteryFactor +

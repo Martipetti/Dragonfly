@@ -38,15 +38,19 @@ public aspect Wrapper1 {
 
     boolean around(): safeLanding() {
         Drone drone = (Drone) thisJoinPoint.getArgs()[0];
-        double distance = drone.getDistanceDestiny();
-        boolean strongRain = drone.isStrongRain();
-        boolean strongWind = drone.isStrongWind();
         int wrapper = drone.getWrapperId();
-        String label = drone.getLabel();
 
         if (wrapper == 1) {
+            double distance = drone.getDistanceDestiny();
+            boolean strongRain = drone.isStrongRain();
+            boolean strongWind = drone.isStrongWind();
+            boolean isOnWater = drone.isOnWater();
+            String label = drone.getLabel();
+
             if ((strongRain ^ strongWind) && distance <= 60) {
                 AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
+                if (isOnWater)
+                    moveASide(thisJoinPoint);
                 keepFlying(thisJoinPoint);
                 QoSMetricsTracker.getInstance().incrementAdaptations(label);
                 AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
@@ -55,18 +59,12 @@ public aspect Wrapper1 {
 
             if (strongRain && strongWind && distance < 30) {
                 AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
+                if (isOnWater)
+                    moveASide(thisJoinPoint);
                 keepFlying(thisJoinPoint);
                 QoSMetricsTracker.getInstance().incrementAdaptations(label);
                 AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
                 return false;
-            }
-
-            if (strongRain && strongWind && distance > 40 && drone.isOnWater()) {
-                AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
-                moveASide(thisJoinPoint);
-                keepFlying(thisJoinPoint);
-                QoSMetricsTracker.getInstance().incrementAdaptations(label);
-                AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
             }
         }
         return true;
