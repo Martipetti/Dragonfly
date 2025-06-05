@@ -31,9 +31,7 @@ public class DroneBusinessObject {
     private KeyCode currentCommand;
     private static DroneBusinessObject instance;
 
-    private DroneBusinessObject() {
-
-    }
+    private DroneBusinessObject() { }
 
     public static DroneBusinessObject getInstance() {
         if (instance == null) {
