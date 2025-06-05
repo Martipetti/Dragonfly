@@ -436,7 +436,7 @@ public class DroneBusinessObject {
     }
 
 
-    public static void updateDistances(Drone selectedDrone) {
+    public static synchronized void updateDistances(Drone selectedDrone) {
         updateDistanceSource(selectedDrone);
         updateDistanceDestiny(selectedDrone);
     }
