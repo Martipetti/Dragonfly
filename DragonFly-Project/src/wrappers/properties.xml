@@ -33,6 +33,12 @@
                     description=""
                     class-name-settings-controller ="DroneSettingsPanelController"/>
 
+    <WrapperElement name-file-aj="WrapperExt"
+                    id="9" name-shown-panel="WrapperExtensions"
+                    color="#78F23A"
+                    description=""
+                    class-name-settings-controller ="DroneSettingsPanelController"/>
+
     <WrapperElement name-file-aj="NoneDroneWithoutBadConnection"
                     id="4" name-shown-panel="None_not.bc"
                     color="#000000"
