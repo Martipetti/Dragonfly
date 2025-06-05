@@ -5,6 +5,9 @@ import controller.DroneController;
 import controller.EnvironmentController;
 import controller.LoggerController;
 import javafx.scene.input.KeyCode;
+import metrics.AdaptationMetricsTracker;
+import metrics.QoSMetricsTracker;
+import metrics.RuntimeCostTracker;
 import model.entity.drone.Drone;
 import model.entity.drone.DroneBusinessObject;
 import org.aspectj.lang.JoinPoint;
@@ -20,6 +23,7 @@ public aspect Wrapper2 {
     pointcut returnToHome() : call (void model.entity.drone.DroneBusinessObject.returnToHome(*));
     pointcut applyEconomyMode() : call (void model.entity.drone.DroneBusinessObject.applyEconomyMode(*));
     pointcut goDestinyAutomatic() : call (void controller.DroneAutomaticController.goDestinyAutomatic(*));
+    pointcut checkAndPrintIfLostDrone(): call (* model.entity.drone.DroneBusinessObject.checkAndPrintIfLostDrone(*));
 
     static private Set<Drone> isGlideSet = new HashSet<>();
     static private int attemptsToAvoid = 0;
@@ -27,7 +31,7 @@ public aspect Wrapper2 {
     before(): goDestinyAutomatic() {
         Drone drone = (Drone) thisJoinPoint.getArgs()[0];
 
-        if (drone.hasObstaclesInFront()) {
+        if (drone.hasObstaclesInFront() && drone.getWrapperId() == 2) {
             attemptsToAvoid++;
             System.out.println("Avoiding obstacle. Attempts: " + attemptsToAvoid);
 
@@ -41,9 +45,17 @@ public aspect Wrapper2 {
                 LoggerController.getInstance().print("The drone is blocked.");
                 attemptsToAvoid = 0;
             } else {
-                avoidObstacle(thisJoinPoint);
-            }
+                String label = drone.getLabel();
 
+                System.out.println("anomaly");
+                AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
+
+                avoidObstacle(thisJoinPoint);
+
+                System.out.println("completion");
+                AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
+                QoSMetricsTracker.getInstance().incrementAdaptations(label);
+            }
         }
     }
 
@@ -116,6 +128,16 @@ public aspect Wrapper2 {
         // around applyEconomyMode
     }
 
+    after(): checkAndPrintIfLostDrone(){
+        Drone drone = (Drone) thisJoinPoint.getArgs()[0];
+        if (drone.getWrapperId() == 2) {
+            String label = ((Drone) thisJoinPoint.getArgs()[0]).getLabel();
+            AdaptationMetricsTracker.getInstance().logMetrics(label);
+            QoSMetricsTracker.getInstance().logQoS(label);
+            RuntimeCostTracker.getInstance().logRuntimeCost(label);
+        }
+    }
+
 
 
     private void moveASide(JoinPoint thisJoinPoint) {
@@ -143,16 +165,10 @@ public aspect Wrapper2 {
         String currentDirection = drone.getAutoFlyDirectionCommand();
         String oppositeDirection = getOppositeDirection(currentDirection);
 
-        System.out.println("currentDirection: " + currentDirection);
-        System.out.println("oppositeDirection: " + oppositeDirection);
-
         boolean avoidMade = false;
 
-        System.out.println("Direction: " + directions[0] + ", HasObstacle: " + drone.hasObstacleInDirection(directions[0]));
-        System.out.println("Direction: " + directions[1] + ", HasObstacle: " + drone.hasObstacleInDirection(directions[1]));
-        System.out.println("Direction: " + directions[2] + ", HasObstacle: " + drone.hasObstacleInDirection(directions[2]));
-        System.out.println("Direction: " + directions[3] + ", HasObstacle: " + drone.hasObstacleInDirection(directions[3]));
-
+        System.out.println("reaction");
+        AdaptationMetricsTracker.getInstance().markEvent(drone.getLabel() + "_reaction");
         for (String direction : directions) {
             if (direction.equals(oppositeDirection)) continue;
 
@@ -160,20 +176,14 @@ public aspect Wrapper2 {
                 DroneBusinessObject.goTo(drone, direction);
                 avoidMade = true;
 
-                System.out.println("Choose: " + direction);
                 break;
             }
         }
 
         if (!avoidMade) {
-            System.out.println("Not opposite is not possibile");
             DroneBusinessObject.goTo(drone, oppositeDirection);
 
             String[] orthogonals = getOrthogonalDirections(oppositeDirection);
-            System.out.println("Orthogonals: " + orthogonals[0] + ", " + orthogonals[1]);
-
-            System.out.println("Orthogonal: " + orthogonals[0] + ", HasObstacle: " + drone.hasObstacleInDirection(orthogonals[0]));
-            System.out.println("Orthogonal: " + orthogonals[1] + ", HasObstacle: " + drone.hasObstacleInDirection(orthogonals[1]));
 
             for (String ortho : orthogonals) {
                 if (!drone.hasObstacleInDirection(ortho)) {
@@ -184,6 +194,16 @@ public aspect Wrapper2 {
             }
         } else {
             attemptsToAvoid = 0;
+        }
+    }
+
+    after(): checkAndPrintIfLostDrone(){
+        Drone drone = (Drone) thisJoinPoint.getArgs()[0];
+        if (drone.getWrapperId() == 1) {
+            String label = ((Drone) thisJoinPoint.getArgs()[0]).getLabel();
+            AdaptationMetricsTracker.getInstance().logMetrics(label);
+            QoSMetricsTracker.getInstance().logQoS(label);
+            RuntimeCostTracker.getInstance().logRuntimeCost(label);
         }
     }
 
