@@ -210,7 +210,7 @@ public class DroneBusinessObject {
 
             flying(selectedDrone, flyDirectionCommand);
 
-            selectedDrone.setFlyDirectionCommand(null);
+            selectedDrone.setFlyDirectionCommand(flyDirectionCommand);
 
         }
 
@@ -654,6 +654,53 @@ public class DroneBusinessObject {
 
     }*/
 
+    public static void returnToBaseAndShutdown(Drone drone) {
+        if (drone == null || drone.isShutDown()) {
+            return;
+        }
+
+        // Imposta la modalità di ritorno
+        drone.setReturningToHome(true);
+
+        // Loop: finché il drone non è arrivato alla base
+        while (drone.getDistanceSource() > 0) {
+            // Calcola la direzione più vicina verso la base
+            String mustGO = closeDirection(
+                    CellController.getInstance().getCellViewFrom(drone.getCurrentPositionI(), drone.getCurrentPositionJ()),
+                    CellController.getInstance().getCellViewFrom(drone.getSourceCell().getRowPosition(), drone.getSourceCell().getColumnPosition())
+            );
+
+            // Muovi il drone in quella direzione
+            goTo(drone, mustGO);
+
+            // Aggiorna distanze e batteria
+            updateDistances(drone);
+            updateBatteryPerBlock(drone);
+
+            // Se la batteria è critica, esegui atterraggio di emergenza
+            if (drone.getCurrentBattery() <= 10) {
+                safeLanding(drone);
+                landing(drone);
+                landed(drone);
+                shutDown(drone);
+                drone.setReturningToHome(false);
+                checkAndPrintIfLostDrone(drone);
+                return;
+            }
+        }
+
+        // Una volta arrivato alla base
+        landing(drone);
+        landed(drone);
+        shutDown(drone);
+
+        drone.setReturningToHome(false);
+        drone.setGoingAutomaticToDestiny(false);
+        drone.setGoingManualToDestiny(false);
+
+        checkAndPrintIfLostDrone(drone);
+    }
+
 
     public static void returnToHome(Drone drone) {
 
@@ -978,79 +1025,25 @@ public class DroneBusinessObject {
     }*/
 
     public static void goTo(Drone drone, String mustGO) {
-        //irregular moviments
-        if (drone.isEconomyMode()) {
-            Random random = new Random();
-            double value = random.nextDouble();
+        switch (mustGO) {
+            case "->":
+                flyingRight(drone);
+                break;
 
-            // right moviments
-            if (value > 0.8) {
-                switch (mustGO) {
-                    case "->":
-                        flyingRight(drone);
-                        break;
+            case "<-":
+                flyingLeft(drone);
+                break;
 
-                    case "<-":
-                        flyingLeft(drone);
-                        break;
+            case "/\\":
+                flyingUp(drone);
+                break;
 
-                    case "/\\":
-                        flyingUp(drone);
-                        break;
-
-                    case "\\/":
-                        flyingDown(drone);
-                        break;
-                }
-            } else {
-
-                //wrong moviments
-
-                int randomNum = 0 + (int) (Math.random() * 4);
-
-                switch (randomNum) {
-                    case 0:
-                        flyingLeft(drone);
-                        break;
-
-                    case 1:
-                        flyingRight(drone);
-                        break;
-
-                    case 2:
-
-                        break;
-
-                    case 3:
-
-                        break;
-                }
-
-            }
-
-            // normal moviments
-        } else {
-            switch (mustGO) {
-                case "->":
-                    flyingRight(drone);
-                    break;
-
-                case "<-":
-                    flyingLeft(drone);
-                    break;
-
-                case "/\\":
-                    flyingUp(drone);
-                    break;
-
-                case "\\/":
-                    flyingDown(drone);
-                    break;
-            }
-
+            case "\\/":
+                flyingDown(drone);
+                break;
         }
 
-
+        drone.setAutoFlyDirectionCommand(mustGO);
     }
 
     public static double distanceDroneWentUp(CellView sourceCellView, CellView destinyCellView) {

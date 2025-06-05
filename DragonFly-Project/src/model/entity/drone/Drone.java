@@ -733,7 +733,24 @@ public class Drone extends Entity {
 
         this.directionCommand = directionCommand;
 
-        notifiesListeners(Thread.currentThread().getStackTrace()[1].getMethodName(),oldValue, newValue);
+        switch (directionCommand) {
+            case W:
+                this.automaticDirection = "/\\";
+                break;
+            case S:
+                this.automaticDirection = "\\/";
+                break;
+            case A:
+                this.automaticDirection = "<-";
+                break;
+            case D:
+                this.automaticDirection = "->";
+                break;
+            default:
+                return;
+        }
+
+        // notifiesListeners(Thread.currentThread().getStackTrace()[1].getMethodName(),oldValue, newValue);
     }
 
     public String getAutoFlyDirectionCommand() {return automaticDirection;}
