@@ -70,25 +70,25 @@
       name="Include File Cross Reference"
       enabled="true"/>
     <report
-      name="Declaration Tree"
+      name="Declaration Obstacle"
       enabled="true"/>
     <report
-      name="Extend Tree"
+      name="Extend Obstacle"
       enabled="false"/>
     <report
-      name="Invocation Tree"
+      name="Invocation Obstacle"
       enabled="false"/>
     <report
-      name="Simple Invocation Tree"
+      name="Simple Invocation Obstacle"
       enabled="true"/>
     <report
       name="Imports"
       enabled="true"/>
     <report
-      name="With Tree"
+      name="With Obstacle"
       enabled="true"/>
     <report
-      name="Simple With Tree"
+      name="Simple With Obstacle"
       enabled="true"/>
     <report
       name="Generic Instantiation"

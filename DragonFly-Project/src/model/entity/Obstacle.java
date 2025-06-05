@@ -3,20 +3,20 @@ package model.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Tree {
-    public static int COUNT_TREE = 1;
+public class Obstacle {
+    public static int COUNT_OBSTACLE = 1;
     private final String uniqueID;
     int rowPosition, columnPosition;
     private Boolean selected = false;
-    private List<Listener> listeners = new ArrayList<>();
+    private List<Obstacle.Listener> listeners = new ArrayList<>();
     private String label;
 
-    public Tree(String uniqueID, String label, int rowPosition, int columnPosition) {
+    public Obstacle(String uniqueID, String label, int rowPosition, int columnPosition) {
         this.uniqueID = uniqueID;
         this.rowPosition = rowPosition;
         this.columnPosition = columnPosition;
         this.label = label;
-        COUNT_TREE++;
+        COUNT_OBSTACLE++;
     }
 
     public String getLabel() {
@@ -24,11 +24,11 @@ public class Tree {
     }
 
     public interface Listener{
-        public void onChange(Tree tree, String methodName, Object oldValue, Object newValue);
+        public void onChange(Obstacle obstacle, String methodName, Object oldValue, Object newValue);
     }
 
     public static void restartCount() {
-        COUNT_TREE = 1;
+        COUNT_OBSTACLE = 1;
     }
 
     public int getRowPosition() {
@@ -64,21 +64,21 @@ public class Tree {
         notifiesListeners(Thread.currentThread().getStackTrace()[1].getMethodName(),oldValue, newValue);
     }
 
-    public List<Listener> getListeners() {
+    public List<Obstacle.Listener> getListeners() {
         return listeners;
     }
 
-    public void setListeners(List<Listener> listeners) {
+    public void setListeners(List<Obstacle.Listener> listeners) {
         this.listeners = listeners;
     }
 
-    public void addListener(Listener listener) {
+    public void addListener(Obstacle.Listener listener) {
         this.listeners.add(listener);
     }
     private void notifiesListeners(String attributeName, Object oldValue, Object newValue){
 
         synchronized (this){
-            for (Listener listener : listeners){
+            for (Obstacle.Listener listener : listeners){
                 listener.onChange(this, attributeName, oldValue, newValue);
             }
         }

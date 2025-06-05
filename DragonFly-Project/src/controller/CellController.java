@@ -236,9 +236,33 @@ public class CellController {
             selectableViewList.add((SelectableView) node);
         }
         return selectableViewList;
-
-
     }
+
+    public List<SelectableView> getAroundSelectableViews(DroneView droneView, int radius) {
+        List<SelectableView> nearbySelectableViews = new ArrayList<>();
+
+        CellView currentCellView = droneView.getCurrentCellView();
+        int currentRow = currentCellView.getRowPosition();
+        int currentCol = currentCellView.getCollunmPosition();
+
+        for (int row = currentRow - radius; row <= currentRow + radius; row++) {
+            for (int col = currentCol - radius; col <= currentCol + radius; col++) {
+                if (row == currentRow && col == currentCol) continue;
+
+                CellView neighborCellView = getCellViewFrom(row, col);
+                if (neighborCellView != null) {
+                    for (Node node : neighborCellView.getChildren()) {
+                        if (node instanceof SelectableView) {
+                            nearbySelectableViews.add((SelectableView) node);
+                        }
+                    }
+                }
+            }
+        }
+
+        return nearbySelectableViews;
+    }
+
 
     public SelectableView getSelectedEntityView(CellView selectedCellView) {
 

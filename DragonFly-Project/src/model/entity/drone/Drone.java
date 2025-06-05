@@ -6,7 +6,9 @@ import controller.CellController;
 import javafx.scene.input.KeyCode;
 import model.Cell;
 import model.entity.Entity;
+import view.CellView;
 import view.SelectableView;
+import view.obstacle.ObstacleView;
 import view.river.RiverView;
 
 import java.lang.reflect.Field;
@@ -54,13 +56,15 @@ public class Drone extends Entity {
     private Boolean isReturningToHome = false;
 
     private Boolean isLost = false;
+    private Boolean isBlocked = false;
 
     private Boolean selected = false;
 
-
+    private List<SelectableView> aroundList = new ArrayList<>(); // two cells around
     private List<SelectableView> onTopOfList = new ArrayList<>();
     private List<Listener> listeners = new ArrayList<>();
     private KeyCode directionCommand;
+    private String automaticDirection;
 
     public static int COUNT_DRONE = 1;
 
@@ -421,10 +425,13 @@ public class Drone extends Entity {
         notifiesListeners(Thread.currentThread().getStackTrace()[1].getMethodName(),oldValue, newValue);
     }
 
+    public List<SelectableView> getAroundList() {return aroundList;}
+    public void addAround(SelectableView around) {this.aroundList.add(around);}
+    public void setAroundList(List<SelectableView> aroundList) {this.aroundList = aroundList;}
+
     public List<SelectableView> getOnTopOfList() {
         return onTopOfList;
     }
-
     public void addOnTopOfDroneList(SelectableView onTopOf) {
         this.onTopOfList.add(onTopOf);
     }
@@ -603,6 +610,7 @@ public class Drone extends Entity {
         if(onTopOfList.isEmpty()){
             return false;
         }
+
         for(Object object :onTopOfList){
             if(object instanceof RiverView){
                 return true;
@@ -612,10 +620,96 @@ public class Drone extends Entity {
         return false;
     }
 
+    public boolean hasObstacleInDirection(String direction) {
+        if (aroundList.isEmpty() || direction == null) {
+            return false;
+        }
+
+        int[][] positionsToCheck = getNextCellPositions(direction);
+
+        for (int[] pos : positionsToCheck) {
+            int i = pos[0];
+            int j = pos[1];
+
+            for (SelectableView view : aroundList) {
+                if (view instanceof ObstacleView) {
+                    CellView cellView = view.getCurrentCellView();
+                    if (cellView.getRowPosition() == i && cellView.getCollunmPosition() == j) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+
+    public boolean hasObstaclesInFront() {
+        if (aroundList.isEmpty()) {
+            return false;
+        }
+
+        int[][] positionsToCheck = getNextCellPositions(automaticDirection);
+
+        for (int[] pos : positionsToCheck) {
+            int i = pos[0];
+            int j = pos[1];
+
+            for (SelectableView view : aroundList) {
+                if (view instanceof ObstacleView) {
+                    CellView cellView = view.getCurrentCellView();
+                    if (cellView.getRowPosition() == i && cellView.getCollunmPosition() == j) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private int[][] getNextCellPositions(String direction) {
+        List<int[]> positions = new ArrayList<>();
+
+        int i = currentPositionI;
+        int j = currentPositionJ;
+
+        switch (direction) {
+            case "/\\": // Su
+                positions.add(new int[]{i - 1, j});     // dritto 1
+                positions.add(new int[]{i - 2, j});     // dritto 2
+                positions.add(new int[]{i - 1, j - 1}); // diagonale sinistra
+                positions.add(new int[]{i - 1, j + 1}); // diagonale destra
+                break;
+            case "\\/": // Giù
+                positions.add(new int[]{i + 1, j});
+                positions.add(new int[]{i + 2, j});
+                positions.add(new int[]{i + 1, j - 1});
+                positions.add(new int[]{i + 1, j + 1});
+                break;
+            case "<-": // Sinistra
+                positions.add(new int[]{i, j - 1});
+                positions.add(new int[]{i, j - 2});
+                positions.add(new int[]{i - 1, j - 1});
+                positions.add(new int[]{i + 1, j - 1});
+                break;
+            case "->": // Destra
+                positions.add(new int[]{i, j + 1});
+                positions.add(new int[]{i, j + 2});
+                positions.add(new int[]{i - 1, j + 1});
+                positions.add(new int[]{i + 1, j + 1});
+                break;
+            default:
+                return new int[0][0]; // direzione non valida
+        }
+
+        return positions.toArray(new int[0][]);
+    }
+
     public Boolean isLost() {
         return isLost;
     }
-
     public void setLost(Boolean isLost) {
         boolean oldValue = this.isLost;
         boolean newValue = isLost;
@@ -629,19 +723,53 @@ public class Drone extends Entity {
         notifiesListeners(Thread.currentThread().getStackTrace()[1].getMethodName(),oldValue, newValue);
     }
 
+    public Boolean isBlocked() { return isBlocked; }
+    public void setBlocked(Boolean isBlocked) {
+        boolean oldValue = this.isBlocked;
+        boolean newValue = isBlocked;
+
+        if(oldValue == newValue){
+            return;
+        }
+
+        this.isBlocked = isBlocked;
+
+        notifiesListeners(Thread.currentThread().getStackTrace()[1].getMethodName(),oldValue, newValue);
+    }
+
     public KeyCode getFlyDirectionCommand() {
         return this.directionCommand;
     }
 
     public void setFlyDirectionCommand(KeyCode directionCommand){
-
         KeyCode oldValue = this.directionCommand;
         KeyCode newValue = directionCommand;
 
-
         this.directionCommand = directionCommand;
 
-        notifiesListeners(Thread.currentThread().getStackTrace()[1].getMethodName(),oldValue, newValue);
+        switch (directionCommand) {
+            case W:
+                this.automaticDirection = "/\\";
+                break;
+            case S:
+                this.automaticDirection = "\\/";
+                break;
+            case A:
+                this.automaticDirection = "<-";
+                break;
+            case D:
+                this.automaticDirection = "->";
+                break;
+            default:
+                return;
+        }
+
+        // notifiesListeners(Thread.currentThread().getStackTrace()[1].getMethodName(),oldValue, newValue);
+    }
+
+    public String getAutoFlyDirectionCommand() {return automaticDirection;}
+    public void setAutoFlyDirectionCommand(String automaticDirection){
+        this.automaticDirection = automaticDirection;
     }
 
     public boolean isSelected(){

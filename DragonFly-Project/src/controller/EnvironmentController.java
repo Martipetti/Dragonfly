@@ -80,6 +80,7 @@ public class EnvironmentController {
             DroneController.getInstance().consumeClickEvent(selectedEntityView);
             BoatAutomaticController.getInstance().consumeClickEvent(selectedEntityView);
             HouseController.getInstance().consumeClickEvent(selectedEntityView);
+            ObstacleController.getInstance().consumeClickEvent(selectedEntityView);
             TreeController.getInstance().consumeClickEvent(selectedEntityView);
         }else {
             CellController.getInstance().consumeClickEvent(selectedCellView);
@@ -109,6 +110,7 @@ public class EnvironmentController {
             DroneController.getInstance().consumeOnKeyPressed(selectedEntityView, keyEvent);
             BoatAutomaticController.getInstance().consumeOnKeyPressed(selectedEntityView,keyEvent);
             HouseController.getInstance().consumeOnKeyPressed(selectedEntityView,keyEvent);
+            ObstacleController.getInstance().consumeOnKeyPressed(selectedEntityView,keyEvent);
             TreeController.getInstance().consumeOnKeyPressed(selectedEntityView,keyEvent);
         } else {
             CellController.getInstance().consumeOnKeyPressed(selectedCellView, keyEvent);
@@ -212,8 +214,8 @@ public class EnvironmentController {
         BoatAutomaticController.getInstance().consumeCleanEnvironment();
         RiverController.getInstance().consumeClearEnvirironment();
         HouseController.getInstance().consumeCleanEnvironment();
+        ObstacleController.getInstance().consumeCleanEnvironment();
         TreeController.getInstance().consumeCleanEnvironment();
-
     }
 
     public void consumeRunEnviroment() {
@@ -224,6 +226,7 @@ public class EnvironmentController {
         BoatAutomaticController.getInstance().consumeRunEnviroment();
         CellController.getInstance().consumeRunEnviroment();
         HouseController.getInstance().consumeRunEnviroment();
+        ObstacleController.getInstance().consumeRunEnviroment();
         TreeController.getInstance().consumeRunEnviroment();
     }
 
@@ -241,8 +244,8 @@ public class EnvironmentController {
         CellController.getInstance().consumeReset();
         BoatAutomaticController.getInstance().consumeReset();
         HouseController.getInstance().consumeReset();
+        ObstacleController.getInstance().consumeReset();
         TreeController.getInstance().consumeReset();
-
 
     }
 
@@ -443,6 +446,32 @@ public class EnvironmentController {
 
     }
 
+    public Obstacle createObstacle(CellView selectedCellView) throws ClickOutsideRegionException {
+
+        String uniqueID = UniqueIDGenenator.generate();
+
+        return createObstacle(uniqueID, selectedCellView);
+
+    }
+
+    public Obstacle createObstacle( String uniqueID , CellView selectedCellView) throws ClickOutsideRegionException {
+        clearSelectionOnAllSelectableView();
+
+        ObstacleController obstacleController = ObstacleController.getInstance();
+
+        if (selectedCellView == null) {
+            throw new ClickOutsideRegionException();
+        }
+
+        String obstacleLabel = String.valueOf(Obstacle.COUNT_OBSTACLE);
+        Obstacle obstacle = obstacleController.createObstacle(uniqueID, obstacleLabel, selectedCellView);
+        this.selectedEntityView = CellController.getInstance().getSelectedEntityView(selectedCellView);
+
+        return obstacle;
+
+
+    }
+
     public Tree createTree(CellView selectedCellView) throws ClickOutsideRegionException {
 
         String uniqueID = UniqueIDGenenator.generate();
@@ -451,18 +480,15 @@ public class EnvironmentController {
 
     }
 
-    public Tree createTree( String uniqueID , CellView selectedCellView) throws ClickOutsideRegionException {
+    public Tree createTree(String uniqueID , CellView selectedCellView) throws ClickOutsideRegionException {
         clearSelectionOnAllSelectableView();
 
-       TreeController treeController = TreeController.getInstance();
+        TreeController treeController = TreeController.getInstance();
 
 
         if (selectedCellView == null) {
             throw new ClickOutsideRegionException();
         }
-
-
-
 
         String treeLabel = String.valueOf(Tree.COUNT_TREE);
 
@@ -471,8 +497,6 @@ public class EnvironmentController {
         this.selectedEntityView = CellController.getInstance().getSelectedEntityView(selectedCellView);
 
         return tree;
-
-
     }
 
     private void stopRandomStrongWind() {
@@ -501,6 +525,7 @@ public class EnvironmentController {
         CellController.getInstance().cleanSelections();
         BoatAutomaticController.getInstance().cleanSelections();
         HouseController.getInstance().cleanSelections();
+        ObstacleController.getInstance().cleanSelections();
         TreeController.getInstance().cleanSelections();
     }
 
