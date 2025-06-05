@@ -70,7 +70,7 @@ public class QoSMetricsTracker {
     }
 
     public void logQoS(String id) {
-        LoggerController.getInstance().print("QoS for " + id + ":");
+        LoggerController.getInstance().print("QoS for Drone[" + id + "]");
         LoggerController.getInstance().print("- Missions Completed: " + missionsCompleted.getOrDefault(id, 0));
         LoggerController.getInstance().print("- Missions Failed: " + missionsFailed.getOrDefault(id, 0));
         LoggerController.getInstance().print("- Adaptations: " + adaptationsPerformed.getOrDefault(id, 0));

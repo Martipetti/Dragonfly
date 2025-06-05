@@ -27,6 +27,12 @@
                     description="Keep(+)Move(+)glide(+)SoS(-)economyMode"
                     class-name-settings-controller ="DroneSettingsPanelController"/>
 
+    <WrapperElement name-file-aj="WrapperFunction"
+                    id="8" name-shown-panel="WrapperFunction"
+                    color="#000000"
+                    description=""
+                    class-name-settings-controller ="DroneSettingsPanelController"/>
+
     <WrapperElement name-file-aj="NoneDroneWithoutBadConnection"
                     id="4" name-shown-panel="None_not.bc"
                     color="#000000"
