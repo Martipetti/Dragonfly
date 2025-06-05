@@ -317,26 +317,6 @@ public class DroneKeyBoardController extends DroneController {
                 return allTheDronesAreShutDown() || mustStopBatteryDecrementer;
             }
         };
-   /*     Runnable runnable = () -> {
-            System.out.println("PerSeconds inicio");
-            if(allTheDronesAreShutDown()){
-                stopWatchBattery.stop();
-            }
-
-            for(Drone currentDroneInEnvirionment : dronesInEnvironment){
-
-                DroneBusinessObject.updateBatteryPerSecond(currentDroneInEnvirionment);
-
-                DroneBusinessObject.checkStatus(currentDroneInEnvirionment);
-                System.out.println("PerSeconds fim");
-            }
-        };
-
-
-        stopWatchBattery = new StopWatch(0,1000, runnable);
-
-        stopWatchBattery.start();*/
-
     }
 
 

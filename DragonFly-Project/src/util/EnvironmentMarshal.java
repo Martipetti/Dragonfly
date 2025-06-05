@@ -87,19 +87,19 @@ abstract public class EnvironmentMarshal {
         }
 
         //HOUSE
-        Element treeElements = document.createElement(ConstantXml.ROOT_TREE_ELEMENT);
-        environmentElements.appendChild(treeElements);
+        Element obstacleElements = document.createElement(ConstantXml.ROOT_TREE_ELEMENT);
+        environmentElements.appendChild(obstacleElements);
 
-        for(Tree tree : TreeController.getInstance().getTreeMap().values()){
+        for(Obstacle obstacle : ObstacleController.getInstance().getObstacleMap().values()){
 
-            Element treeElement = document.createElement(ConstantXml.TREE_ELEMENT);
+            Element obstacleElement = document.createElement(ConstantXml.TREE_ELEMENT);
 
-            treeElement.setAttribute(ConstantXml.UNIQUE_ID_ATTRIBUTE,tree.getUniqueID());
-            treeElement.setAttribute(ConstantXml.LABEL_ATTRIBUTE, tree.getLabel());
-            treeElement.setAttribute(ConstantXml.SOURCE_COLUMN_POSITION_ATTRIBUTE, String.valueOf(tree.getColumnPosition()));
-            treeElement.setAttribute(ConstantXml.SOURCE_ROW_POSITION_ATTRIBUTE, String.valueOf(tree.getRowPosition()));
+            obstacleElement.setAttribute(ConstantXml.UNIQUE_ID_ATTRIBUTE,obstacle.getUniqueID());
+            obstacleElement.setAttribute(ConstantXml.LABEL_ATTRIBUTE, obstacle.getLabel());
+            obstacleElement.setAttribute(ConstantXml.SOURCE_COLUMN_POSITION_ATTRIBUTE, String.valueOf(obstacle.getColumnPosition()));
+            obstacleElement.setAttribute(ConstantXml.SOURCE_ROW_POSITION_ATTRIBUTE, String.valueOf(obstacle.getRowPosition()));
 
-            treeElements.appendChild(treeElement);
+            obstacleElements.appendChild(obstacleElement);
 
         }
 
@@ -270,26 +270,26 @@ abstract public class EnvironmentMarshal {
         }
 
         //TREE
-        Node rootTreeElement = root.getElementsByTagName(ConstantXml.ROOT_TREE_ELEMENT).item(0);
+        Node rootObstacleElement = root.getElementsByTagName(ConstantXml.ROOT_TREE_ELEMENT).item(0);
 
 
-        for(int i=0; i<rootTreeElement.getChildNodes().getLength(); i++){
-            Node treeNode = rootTreeElement.getChildNodes().item(i);
+        for(int i=0; i<rootObstacleElement.getChildNodes().getLength(); i++){
+            Node obstacleNode = rootObstacleElement.getChildNodes().item(i);
 
-            if(treeNode.getNodeName().equals("#text")){ // I dont now why this problem
+            if(obstacleNode.getNodeName().equals("#text")){ // I dont now why this problem
                 continue;
             }
 
-            String uniqueID = treeNode.getAttributes().getNamedItem(ConstantXml.UNIQUE_ID_ATTRIBUTE).getNodeValue();
-            String label = treeNode.getAttributes().getNamedItem(ConstantXml.LABEL_ATTRIBUTE).getNodeValue();
-            int columnPosition = Integer.parseInt(treeNode.getAttributes().getNamedItem(ConstantXml.SOURCE_COLUMN_POSITION_ATTRIBUTE).getNodeValue());
-            int rowPosition = Integer.parseInt(treeNode.getAttributes().getNamedItem(ConstantXml.SOURCE_ROW_POSITION_ATTRIBUTE).getNodeValue());
+            String uniqueID = obstacleNode.getAttributes().getNamedItem(ConstantXml.UNIQUE_ID_ATTRIBUTE).getNodeValue();
+            String label = obstacleNode.getAttributes().getNamedItem(ConstantXml.LABEL_ATTRIBUTE).getNodeValue();
+            int columnPosition = Integer.parseInt(obstacleNode.getAttributes().getNamedItem(ConstantXml.SOURCE_COLUMN_POSITION_ATTRIBUTE).getNodeValue());
+            int rowPosition = Integer.parseInt(obstacleNode.getAttributes().getNamedItem(ConstantXml.SOURCE_ROW_POSITION_ATTRIBUTE).getNodeValue());
 
             CellController cellController = CellController.getInstance();
             CellView cellView = cellController.getCellViewFrom(rowPosition,columnPosition);
 
 
-            TreeController.getInstance().createTree(uniqueID, label, cellView);
+            ObstacleController.getInstance().createObstacle(uniqueID, label, cellView);
         }
 
 

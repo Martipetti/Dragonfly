@@ -1,4 +1,4 @@
-package view.tree;
+package view.obstacle;
 
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -7,24 +7,24 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
-import model.entity.Tree;
+import model.entity.Obstacle;
 import util.SelectHelper;
 import view.CellView;
 import view.SelectableView;
 
-public class TreeView extends Group implements SelectableView, Tree.Listener {
-    private  String uniqueID;
-    private String treeLabel;
+public class ObstacleView extends Group implements SelectableView, Obstacle.Listener {
+    private String uniqueID;
+    private String obstacleLabel;
     private CellView currentCellView;
     private SelectHelper selectHelper = new SelectHelper(SelectHelper.DEFAULT_COLOR);
 
-    public TreeView(String uniqueID, String treelLabel, CellView cellViewSelected) {
-        this.treeLabel = treelLabel;
+    public ObstacleView(String uniqueID, String obstacleLabel, CellView cellViewSelected) {
+        this.obstacleLabel = obstacleLabel;
         this.uniqueID = uniqueID;
         this.currentCellView = cellViewSelected;
 
         Label label = new Label();
-        label.setText(treelLabel);
+        label.setText(obstacleLabel);
         label.setTextFill(Color.RED);
         label.setTextAlignment(TextAlignment.CENTER);
 
@@ -38,8 +38,8 @@ public class TreeView extends Group implements SelectableView, Tree.Listener {
     }
 
     @Override
-    public void onChange(Tree tree, String methodName, Object oldValue, Object newValue) {
-        if(uniqueID != tree.getUniqueID()){
+    public void onChange(Obstacle obstacle, String methodName, Object oldValue, Object newValue) {
+        if(uniqueID != obstacle.getUniqueID()){
             return;
         }
 
@@ -86,8 +86,8 @@ public class TreeView extends Group implements SelectableView, Tree.Listener {
 
     }
 
-    public String getTreeLabel() {
-        return treeLabel;
+    public String getObstacleLabel() {
+        return obstacleLabel;
     }
 
 }

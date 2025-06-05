@@ -66,7 +66,6 @@ public abstract class DroneController {
 
     abstract public void startUpdateBatteryPerSeconds();
 
-
     public abstract Drone createDrone(String uniqueID, String droneLabel,CellView currentCellView);
 
     public void deleteDrone(Drone drone){
