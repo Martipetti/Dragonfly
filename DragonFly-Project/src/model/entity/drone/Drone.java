@@ -56,6 +56,7 @@ public class Drone extends Entity {
     private Boolean isReturningToHome = false;
 
     private Boolean isLost = false;
+    private Boolean isBlocked = false;
 
     private Boolean selected = false;
 
@@ -709,7 +710,6 @@ public class Drone extends Entity {
     public Boolean isLost() {
         return isLost;
     }
-
     public void setLost(Boolean isLost) {
         boolean oldValue = this.isLost;
         boolean newValue = isLost;
@@ -719,6 +719,20 @@ public class Drone extends Entity {
         }
 
         this.isLost = isLost;
+
+        notifiesListeners(Thread.currentThread().getStackTrace()[1].getMethodName(),oldValue, newValue);
+    }
+
+    public Boolean isBlocked() { return isBlocked; }
+    public void setBlocked(Boolean isBlocked) {
+        boolean oldValue = this.isBlocked;
+        boolean newValue = isBlocked;
+
+        if(oldValue == newValue){
+            return;
+        }
+
+        this.isBlocked = isBlocked;
 
         notifiesListeners(Thread.currentThread().getStackTrace()[1].getMethodName(),oldValue, newValue);
     }

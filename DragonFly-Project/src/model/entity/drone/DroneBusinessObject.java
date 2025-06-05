@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.TimerTask;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class DroneBusinessObject {
     private static StopWatch returnToHomeStopWatch;
@@ -659,25 +660,17 @@ public class DroneBusinessObject {
             return;
         }
 
-        // Imposta la modalità di ritorno
-        drone.setReturningToHome(true);
-
-        // Loop: finché il drone non è arrivato alla base
         while (drone.getDistanceSource() > 0) {
-            // Calcola la direzione più vicina verso la base
             String mustGO = closeDirection(
                     CellController.getInstance().getCellViewFrom(drone.getCurrentPositionI(), drone.getCurrentPositionJ()),
                     CellController.getInstance().getCellViewFrom(drone.getSourceCell().getRowPosition(), drone.getSourceCell().getColumnPosition())
             );
 
-            // Muovi il drone in quella direzione
             goTo(drone, mustGO);
 
-            // Aggiorna distanze e batteria
             updateDistances(drone);
             updateBatteryPerBlock(drone);
 
-            // Se la batteria è critica, esegui atterraggio di emergenza
             if (drone.getCurrentBattery() <= 10) {
                 safeLanding(drone);
                 landing(drone);
@@ -689,7 +682,6 @@ public class DroneBusinessObject {
             }
         }
 
-        // Una volta arrivato alla base
         landing(drone);
         landed(drone);
         shutDown(drone);

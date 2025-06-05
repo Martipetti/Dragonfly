@@ -32,8 +32,13 @@ public aspect Wrapper2 {
             System.out.println("Avoiding obstacle. Attempts: " + attemptsToAvoid);
 
             if (attemptsToAvoid > 10) {
-                System.out.println("Too many attempts. Returning to home.");
-                DroneBusinessObject.returnToBaseAndShutdown(drone);
+                LoggerController.getInstance().print("Too many attempts. Landing.");
+                DroneBusinessObject.safeLanding(drone);
+                DroneBusinessObject.landing(drone);
+                DroneBusinessObject.landed(drone);
+                DroneBusinessObject.shutDown(drone);
+
+                LoggerController.getInstance().print("The drone is blocked.");
                 // attemptsToAvoid = 0;
             } else {
                 avoidObstacle(thisJoinPoint);
