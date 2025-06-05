@@ -60,6 +60,14 @@ public aspect Wrapper1 {
                 AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
                 return false;
             }
+
+            if (strongRain && strongWind && distance > 40 && drone.isOnWater()) {
+                AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
+                moveASide(thisJoinPoint);
+                keepFlying(thisJoinPoint);
+                QoSMetricsTracker.getInstance().incrementAdaptations(label);
+                AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
+            }
         }
         return true;
     }
