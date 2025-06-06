@@ -27,6 +27,10 @@ public aspect Wrapper2 {
     before(): goDestinyAutomatic() {
         Drone drone = (Drone) thisJoinPoint.getArgs()[0];
 
+        if (drone.getWrapperId() != 2) {
+            return;
+        }
+        
         if (drone.hasObstaclesInFront()) {
             attemptsToAvoid++;
             System.out.println("Avoiding obstacle. Attempts: " + attemptsToAvoid);
