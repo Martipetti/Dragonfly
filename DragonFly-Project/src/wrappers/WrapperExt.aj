@@ -24,7 +24,7 @@ public aspect WrapperExt {
         Drone drone = (Drone) thisJoinPoint.getArgs()[0];
         String label = drone.getLabel();
 
-        if (drone.hasObstaclesInFront() && drone.getWrapperId() == 2) {
+        if (drone.hasObstaclesInFront() && drone.getWrapperId() == 9) {
             attemptsToAvoid++;
             System.out.println("Avoiding obstacle. Attempts: " + attemptsToAvoid);
             AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
