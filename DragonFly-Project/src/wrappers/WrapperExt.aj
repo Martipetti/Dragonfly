@@ -1,10 +1,8 @@
-
 package wrappers;
 
 import controller.DroneController;
 import controller.EnvironmentController;
 import controller.LoggerController;
-import javafx.scene.input.KeyCode;
 import metrics.AdaptationMetricsTracker;
 import metrics.QoSMetricsTracker;
 import metrics.RuntimeCostTracker;
@@ -13,26 +11,20 @@ import model.entity.drone.DroneBusinessObject;
 import org.aspectj.lang.JoinPoint;
 import view.CellView;
 import view.drone.DroneView;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
-public aspect Wrapper2 {
-
+public aspect WrapperExt {
     pointcut safeLanding(): call (* model.entity.drone.DroneBusinessObject.safeLanding(*));
-    pointcut returnToHome() : call (void model.entity.drone.DroneBusinessObject.returnToHome(*));
-    pointcut applyEconomyMode() : call (void model.entity.drone.DroneBusinessObject.applyEconomyMode(*));
-    pointcut goDestinyAutomatic() : call (void controller.DroneAutomaticController.goDestinyAutomatic(*));
+    pointcut applyEconomyMode(): call (* model.entity.drone.DroneBusinessObject.applyEconomyMode(*));
     pointcut checkAndPrintIfLostDrone(): call (* model.entity.drone.DroneBusinessObject.checkAndPrintIfLostDrone(*));
+    pointcut goDestinyAutomatic() : call (void controller.DroneAutomaticController.goDestinyAutomatic(*));
 
-    static private Set<Drone> isGlideSet = new HashSet<>();
     static private int attemptsToAvoid = 0;
 
     Object around(): goDestinyAutomatic() {
         Drone drone = (Drone) thisJoinPoint.getArgs()[0];
         String label = drone.getLabel();
 
-        if (drone.hasObstaclesInFront() && drone.getWrapperId() == 2) {
+        if (drone.hasObstaclesInFront() && drone.getWrapperId() == 9) {
             attemptsToAvoid++;
             System.out.println("Avoiding obstacle. Attempts: " + attemptsToAvoid);
             AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
@@ -59,77 +51,64 @@ public aspect Wrapper2 {
         }
     }
 
-
-    //estou testando isso aqui só para automático, pode ser que no manual eu tenho que lidar com mais threads
-    before(): safeLanding()
-            &&
-            if(
-            (((Drone)thisJoinPoint.getArgs()[0]).getWrapperId() == 2)
-            &&
-            (((Drone)thisJoinPoint.getArgs()[0]).getDistanceDestiny() > 60)
-            &&
-            (((Drone)thisJoinPoint.getArgs()[0]).isOnWater())
-            ){
-        moveASide(thisJoinPoint);
-    }
-
-    //60 representa 2 bloquinhos de distancia
-    boolean around(): safeLanding()
-            &&
-            if(
-            (((Drone)thisJoinPoint.getArgs()[0]).getWrapperId() == 2)
-            &&
-            (((Drone)thisJoinPoint.getArgs()[0]).isStrongWind())
-            &&
-            (((Drone)thisJoinPoint.getArgs()[0]).isStrongRain())
-            &&
-            (((Drone)thisJoinPoint.getArgs()[0]).getDistanceDestiny() <=60)
-            ){
-        keepFlying(thisJoinPoint);
-        return false;
-    }
-
-    void around(): returnToHome()
-            &&
-            if(
-            (((Drone)thisJoinPoint.getArgs()[0]).getWrapperId() == 2)
-            &&
-            (((Drone)thisJoinPoint.getArgs()[0]).getCurrentBattery() > 10)
-            &&
-            (((Drone)thisJoinPoint.getArgs()[0]).getDistanceDestiny() < ((Drone)thisJoinPoint.getArgs()[0]).getDistanceSource())
-            ){
-        glide(thisJoinPoint);
-    }
-
-    void around(): goDestinyAutomatic()
-            &&
-            if(
-            (((Drone)thisJoinPoint.getArgs()[0]).getWrapperId() == 2)
-            &&
-            (isGlideSet.contains((Drone)thisJoinPoint.getArgs()[0]))
-            &&
-            (((Drone)thisJoinPoint.getArgs()[0]).isBadConnection())
-            ){
-
-        // around goDestinyAutomatic while is glide
-
+    void around(): applyEconomyMode() {
         Drone drone = (Drone) thisJoinPoint.getArgs()[0];
-        isGlideSet.remove(drone);
+        if (drone.getWrapperId() == 9){
 
+        }
     }
 
-    void around(): applyEconomyMode()
-            &&
-            if
-            (
-            (((Drone)thisJoinPoint.getArgs()[0]).getWrapperId() == 2)
-            ){
-        // around applyEconomyMode
+    before(): safeLanding() {
+        Drone drone = (Drone) thisJoinPoint.getArgs()[0];
+        int wrapper = drone.getWrapperId();
+
+        if (wrapper == 9) {
+            String label = drone.getLabel();
+            double distance = drone.getDistanceDestiny();
+            boolean isOnWater = drone.isOnWater();
+
+            if (distance > 60 && isOnWater) {
+                AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
+                moveASide(thisJoinPoint);
+                AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
+                QoSMetricsTracker.getInstance().incrementAdaptations(label);
+            }
+        }
+    }
+
+    boolean around(): safeLanding() {
+        Drone drone = (Drone) thisJoinPoint.getArgs()[0];
+        double distance = drone.getDistanceDestiny();
+        boolean strongRain = drone.isStrongRain();
+        boolean strongWind = drone.isStrongWind();
+        int wrapper = drone.getWrapperId();
+        String label = drone.getLabel();
+
+        if (wrapper == 9) {
+            if ((strongRain ^ strongWind) && distance <= 60) {
+                AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
+                keepFlying(thisJoinPoint);
+                QoSMetricsTracker.getInstance().incrementAdaptations(label);
+                AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
+                return false;
+            }
+
+            if (strongRain && strongWind && distance < 30) {
+                AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
+                keepFlying(thisJoinPoint);
+                QoSMetricsTracker.getInstance().incrementAdaptations(label);
+                AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
+                return false;
+            }
+            return true;
+        } else {
+            return proceed();
+        }
     }
 
     after(): checkAndPrintIfLostDrone(){
         Drone drone = (Drone) thisJoinPoint.getArgs()[0];
-        if (drone.getWrapperId() == 2) {
+        if (drone.getWrapperId() == 9) {
             String label = ((Drone) thisJoinPoint.getArgs()[0]).getLabel();
             AdaptationMetricsTracker.getInstance().logMetrics(label);
             QoSMetricsTracker.getInstance().logQoS(label);
@@ -137,20 +116,19 @@ public aspect Wrapper2 {
         }
     }
 
-
-
     private void moveASide(JoinPoint thisJoinPoint) {
+
         Drone drone = (Drone) thisJoinPoint.getArgs()[0];
+
         DroneView droneView = DroneController.getInstance().getDroneViewFrom(drone.getUniqueID());
         CellView closerLandCellView = EnvironmentController.getInstance().getCloserLand(drone);
-        System.out.println("closerLandCellView: " + closerLandCellView.getRowPosition() + "," + closerLandCellView.getCollunmPosition());
 
         System.out.println("Drone["+drone.getLabel()+"] "+"Move Aside");
         LoggerController.getInstance().print("Drone["+drone.getLabel()+"] "+"Move Aside");
+        AdaptationMetricsTracker.getInstance().markEvent(drone.getLabel() + "_reaction");
 
         while (drone.isOnWater()) {
             String goDirection = DroneBusinessObject.closeDirection(droneView.getCurrentCellView(), closerLandCellView);
-            // drone.setEconomyMode(false);
             DroneBusinessObject.goTo(drone, goDirection);
         }
     }
@@ -188,16 +166,6 @@ public aspect Wrapper2 {
         }
     }
 
-    after(): checkAndPrintIfLostDrone(){
-        Drone drone = (Drone) thisJoinPoint.getArgs()[0];
-        if (drone.getWrapperId() == 1) {
-            String label = ((Drone) thisJoinPoint.getArgs()[0]).getLabel();
-            AdaptationMetricsTracker.getInstance().logMetrics(label);
-            QoSMetricsTracker.getInstance().logQoS(label);
-            RuntimeCostTracker.getInstance().logRuntimeCost(label);
-        }
-    }
-
 
     private String[] getOrthogonalDirections(String direction) {
         if (direction == null) return new String[0];
@@ -231,24 +199,11 @@ public aspect Wrapper2 {
         }
     }
 
-
-
-
     private void keepFlying(JoinPoint thisJoinPoint) {
         Drone drone = (Drone) thisJoinPoint.getArgs()[0];
-        //drone.setEconomyMode(false);
         System.out.println("Drone["+drone.getLabel()+"] "+"Keep Flying");
+        AdaptationMetricsTracker.getInstance().markEvent(drone.getLabel() + "_reaction");
         LoggerController.getInstance().print("Drone["+drone.getLabel()+"] "+"Keep Flying");
     }
-
-
-    private void glide(JoinPoint thisJoinPoint) {
-        Drone drone = (Drone) thisJoinPoint.getArgs()[0];
-        System.out.println("Drone["+drone.getLabel()+"] "+"Glide");
-        LoggerController.getInstance().print("Drone["+drone.getLabel()+"] "+"Glide");
-        isGlideSet.add(drone);
-
-    }
-
 
 }

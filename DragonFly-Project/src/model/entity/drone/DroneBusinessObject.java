@@ -144,14 +144,6 @@ public class DroneBusinessObject {
 
     }
 
-    public static void checkObstaclesPerBlock(Drone drone) {
-        if (drone.isShutDown() || drone.isGoingManualToDestiny()) {
-            return;
-        }
-
-
-    }
-
     public static void updateBatteryPerSecond(Drone drone) {
         //  synchronized (lock){
         //System.out.println("PerSecond");
@@ -434,7 +426,7 @@ public class DroneBusinessObject {
     }
 
 
-    public static void updateDistances(Drone selectedDrone) {
+    public static synchronized void updateDistances(Drone selectedDrone) {
         updateDistanceSource(selectedDrone);
         updateDistanceDestiny(selectedDrone);
     }
@@ -653,44 +645,6 @@ public class DroneBusinessObject {
 
 
     }*/
-
-    public static void returnToBaseAndShutdown(Drone drone) {
-        if (drone == null || drone.isShutDown()) {
-            return;
-        }
-
-        while (drone.getDistanceSource() > 0) {
-            String mustGO = closeDirection(
-                    CellController.getInstance().getCellViewFrom(drone.getCurrentPositionI(), drone.getCurrentPositionJ()),
-                    CellController.getInstance().getCellViewFrom(drone.getSourceCell().getRowPosition(), drone.getSourceCell().getColumnPosition())
-            );
-
-            goTo(drone, mustGO);
-
-            updateDistances(drone);
-            updateBatteryPerBlock(drone);
-
-            if (drone.getCurrentBattery() <= 10) {
-                safeLanding(drone);
-                landing(drone);
-                landed(drone);
-                shutDown(drone);
-                drone.setReturningToHome(false);
-                checkAndPrintIfLostDrone(drone);
-                return;
-            }
-        }
-
-        landing(drone);
-        landed(drone);
-        shutDown(drone);
-
-        drone.setReturningToHome(false);
-        drone.setGoingAutomaticToDestiny(false);
-        drone.setGoingManualToDestiny(false);
-
-        checkAndPrintIfLostDrone(drone);
-    }
 
 
     public static void returnToHome(Drone drone) {

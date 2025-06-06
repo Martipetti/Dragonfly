@@ -350,10 +350,7 @@ public class DroneAutomaticController extends DroneController {
 
         }
 
-        drone.setAutoFlyDirectionCommand(mustGO);
         DroneBusinessObject.goTo(drone, mustGO);
-
-
 //        DroneBusinessObject.getInstance().checkStatus(drone);
 
     }
