@@ -23,7 +23,7 @@ public aspect Wrapper1 {
         int wrapper = drone.getWrapperId();
 
         if (wrapper != 1) {
-            return proceed();
+            return;
         }
 
         double distance = drone.getDistanceDestiny();
@@ -79,7 +79,7 @@ public aspect Wrapper1 {
         Drone drone = (Drone) thisJoinPoint.getArgs()[0];
 
         if (drone.getWrapperId() != 1) {
-            return proceed();
+            return;
         }
 
         String label = ((Drone) thisJoinPoint.getArgs()[0]).getLabel();
@@ -92,7 +92,7 @@ public aspect Wrapper1 {
     void around(): applyEconomyMode() {
         Drone drone = (Drone) thisJoinPoint.getArgs()[0];
         if (drone.getWrapperId() != 1) {
-            return proceed();
+            proceed();
         }
     }
 
