@@ -169,7 +169,6 @@ public aspect Wrapper2 {
 
             for (String ortho : orthogonals) {
                 if (!drone.hasObstacleInDirection(ortho)) {
-                    System.out.println("Ortogonale: " + ortho + " ha funzionato");
                     DroneBusinessObject.goTo(drone, ortho);
 
                     currentDirection = ortho;
@@ -177,8 +176,6 @@ public aspect Wrapper2 {
 
                     avoidMade = true;
                     break;
-                } else {
-                    System.out.println("Ortogonale: " + ortho + " NON ha funzionato");
                 }
             }
 
