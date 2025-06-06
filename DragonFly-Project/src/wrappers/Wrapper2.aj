@@ -39,7 +39,7 @@ public aspect Wrapper2 {
                 DroneBusinessObject.shutDown(drone);
 
                 LoggerController.getInstance().print("The drone is blocked.");
-                // attemptsToAvoid = 0;
+                attemptsToAvoid = 0;
             } else {
                 avoidObstacle(thisJoinPoint);
             }
@@ -182,6 +182,8 @@ public aspect Wrapper2 {
                     break;
                 }
             }
+        } else {
+            attemptsToAvoid = 0;
         }
     }
 
