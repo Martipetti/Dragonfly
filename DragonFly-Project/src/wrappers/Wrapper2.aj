@@ -28,14 +28,17 @@ public aspect Wrapper2 {
     static private Set<Drone> isGlideSet = new HashSet<>();
     static private int attemptsToAvoid = 0;
 
-    before(): goDestinyAutomatic() {
+    Object around(): goDestinyAutomatic() {
         Drone drone = (Drone) thisJoinPoint.getArgs()[0];
+        String label = drone.getLabel();
 
         if (drone.hasObstaclesInFront() && drone.getWrapperId() == 2) {
             attemptsToAvoid++;
             System.out.println("Avoiding obstacle. Attempts: " + attemptsToAvoid);
+            AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
 
-            if (attemptsToAvoid > 10) {
+            if (attemptsToAvoid > 100) {
+                AdaptationMetricsTracker.getInstance().markEvent(drone.getLabel() + "_reaction");
                 LoggerController.getInstance().print("Too many attempts. Landing.");
                 DroneBusinessObject.safeLanding(drone);
                 DroneBusinessObject.landing(drone);
@@ -45,17 +48,14 @@ public aspect Wrapper2 {
                 LoggerController.getInstance().print("The drone is blocked.");
                 attemptsToAvoid = 0;
             } else {
-                String label = drone.getLabel();
-
-                System.out.println("anomaly");
-                AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
-
-                avoidObstacle(thisJoinPoint);
-
-                System.out.println("completion");
-                AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
-                QoSMetricsTracker.getInstance().incrementAdaptations(label);
+                avoidObstacle(drone);
             }
+            AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
+            QoSMetricsTracker.getInstance().incrementAdaptations(label);
+
+            return null;
+        } else {
+            return proceed();
         }
     }
 
@@ -100,7 +100,6 @@ public aspect Wrapper2 {
             ){
         glide(thisJoinPoint);
     }
-
 
     void around(): goDestinyAutomatic()
             &&
@@ -156,44 +155,39 @@ public aspect Wrapper2 {
         }
     }
 
-    private void avoidObstacle(JoinPoint thisJoinPoint) {
-        Drone drone = (Drone) thisJoinPoint.getArgs()[0];
-
+    private void avoidObstacle(Drone drone) {
         LoggerController.getInstance().print("Drone[" + drone.getLabel() + "] Obstacle detected! Trying to avoid...");
 
-        String[] directions = {"<-", "->", "/\\", "\\/"};
         String currentDirection = drone.getAutoFlyDirectionCommand();
         String oppositeDirection = getOppositeDirection(currentDirection);
-
         boolean avoidMade = false;
 
-        System.out.println("reaction");
         AdaptationMetricsTracker.getInstance().markEvent(drone.getLabel() + "_reaction");
-        for (String direction : directions) {
-            if (direction.equals(oppositeDirection)) continue;
 
-            if (!drone.hasObstacleInDirection(direction)) {
-                DroneBusinessObject.goTo(drone, direction);
-                avoidMade = true;
-
-                break;
-            }
-        }
-
-        if (!avoidMade) {
-            DroneBusinessObject.goTo(drone, oppositeDirection);
-
-            String[] orthogonals = getOrthogonalDirections(oppositeDirection);
+        while(!avoidMade) {
+            String[] orthogonals = getOrthogonalDirections(currentDirection);
 
             for (String ortho : orthogonals) {
                 if (!drone.hasObstacleInDirection(ortho)) {
+                    System.out.println("Ortogonale: " + ortho + " ha funzionato");
                     DroneBusinessObject.goTo(drone, ortho);
 
+                    currentDirection = ortho;
+                    drone.setAutoFlyDirectionCommand(ortho);
+
+                    avoidMade = true;
                     break;
+                } else {
+                    System.out.println("Ortogonale: " + ortho + " NON ha funzionato");
                 }
             }
-        } else {
-            attemptsToAvoid = 0;
+
+            if (!avoidMade) {
+                DroneBusinessObject.goTo(drone, oppositeDirection);
+
+                drone.setAutoFlyDirectionCommand(oppositeDirection);
+                currentDirection = oppositeDirection;
+            }
         }
     }
 
