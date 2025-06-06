@@ -100,8 +100,10 @@ public aspect WrapperExt {
                 AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
                 return false;
             }
+            return true;
+        } else {
+            return proceed();
         }
-        return true;
     }
 
     after(): checkAndPrintIfLostDrone(){
