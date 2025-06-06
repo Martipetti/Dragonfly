@@ -37,7 +37,7 @@ public aspect Wrapper2 {
             System.out.println("Avoiding obstacle. Attempts: " + attemptsToAvoid);
             AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
 
-            if (attemptsToAvoid > 100) {
+            if (attemptsToAvoid > 15) {
                 AdaptationMetricsTracker.getInstance().markEvent(drone.getLabel() + "_reaction");
                 LoggerController.getInstance().print("Too many attempts. Landing.");
                 DroneBusinessObject.safeLanding(drone);
