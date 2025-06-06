@@ -19,6 +19,10 @@ public aspect WrapperFunction {
         Drone drone = (Drone) thisJoinPoint.getArgs()[0];
         int wrapper = drone.getWrapperId();
 
+        if (wrapper != 8) {
+            return proceed();
+        }
+
         double distance = drone.getDistanceDestiny();
         double totalDistance = drone.getDistanceSource() + distance;
         double distanceFactor = distance/totalDistance;
@@ -31,32 +35,30 @@ public aspect WrapperFunction {
         double strongRainPenalty = drone.isOnWater() ? 1 : 0;
         double waterPenalty = drone.isOnWater() ? 1 : 0;
 
-        if (wrapper == 8) {
-            double utilityFunction =
-                    0.3 * distanceFactor +
-                    0.4 * batteryFactor +
-                    0.075 * strongRainPenalty +
-                    0.075 * strongWindPenalty +
-                    0.15 * waterPenalty;
+        double utilityFunction =
+                0.3 * distanceFactor +
+                0.4 * batteryFactor +
+                0.075 * strongRainPenalty +
+                0.075 * strongWindPenalty +
+                0.15 * waterPenalty;
 
-            LoggerController.getInstance().print("Drone["+drone.getLabel()+"] Utility Function: "+utilityFunction);
+        LoggerController.getInstance().print("Drone["+drone.getLabel()+"] Utility Function: "+utilityFunction);
 
-            if (battery == 0){
-                return true;
-            }
-            if (utilityFunction < 0.3) {
-                keepFlying(drone);
-                return false;
-            } else if (utilityFunction < 0.5) {
-                moveASide(drone);
-                return false;
-            } else {
-                moveASide(drone);
-                drone.setIsSafeland(true);
-                return true;
-            }
+        if (battery == 0){
+            return true;
         }
-        return true;
+        if (utilityFunction < 0.3) {
+            keepFlying(drone);
+            return false;
+        } else if (utilityFunction < 0.5) {
+            moveASide(drone);
+            return false;
+        } else {
+            moveASide(drone);
+            drone.setIsSafeland(true);
+            return true;
+        }
+
     }
 
     void around(): applyEconomyMode() {

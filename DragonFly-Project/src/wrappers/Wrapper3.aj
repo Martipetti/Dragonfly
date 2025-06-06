@@ -60,19 +60,23 @@ public aspect Wrapper3 {
 
     boolean around(): safeLanding() {
         Drone drone = (Drone) thisJoinPoint.getArgs()[0];
+        int wrapper = drone.getWrapperId();
+
+        if (wrapper != 3) {
+            return proceed();
+        }
+
         boolean strongRain = drone.isStrongRain();
         boolean strongWind = drone.isStrongWind();
         double distance = drone.getDistanceDestiny();
 
-        if (drone.getWrapperId() == 3 && !existEnableBoatToSoS((Drone) thisJoinPoint.getArgs()[0])) {
-            if ((strongRain ^ strongWind) && distance <= 60) {
-                keepFlying(thisJoinPoint);
-                return false;
-            }
-            if (strongRain && strongWind && distance < 30) {
-                keepFlying(thisJoinPoint);
-                return false;
-            }
+        if ((strongRain ^ strongWind) && distance <= 60) {
+            keepFlying(thisJoinPoint);
+            return false;
+        }
+        if (strongRain && strongWind && distance < 30) {
+            keepFlying(thisJoinPoint);
+            return false;
         }
         return true;
     }
