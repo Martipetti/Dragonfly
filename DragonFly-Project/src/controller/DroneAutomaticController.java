@@ -366,7 +366,6 @@ public class DroneAutomaticController extends DroneController {
             isShutdown = isShutdown && drone.isShutDown();
             RuntimeCostTracker.getInstance().endCycle(drone.getLabel());
         }
-        FailureAvoidanceMetricTracker.getInstance().logFailureAvoidance();
         return isShutdown;
     }
 

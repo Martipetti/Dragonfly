@@ -4,6 +4,7 @@ import controller.DroneController;
 import controller.EnvironmentController;
 import controller.LoggerController;
 import metrics.AdaptationMetricsTracker;
+import metrics.FailureAvoidanceMetricTracker;
 import metrics.QoSMetricsTracker;
 import metrics.RuntimeCostTracker;
 import model.entity.drone.Drone;
@@ -38,12 +39,14 @@ public aspect WrapperExt {
                 DroneBusinessObject.shutDown(drone);
 
                 LoggerController.getInstance().print("The drone is blocked.");
+                QoSMetricsTracker.getInstance().incrementMissionFailed(label);
                 attemptsToAvoid = 0;
             } else {
                 avoidObstacle(drone);
+                QoSMetricsTracker.getInstance().incrementAdaptations(label);
+                FailureAvoidanceMetricTracker.getInstance().addFailureAvoidance(label);
             }
             AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
-            QoSMetricsTracker.getInstance().incrementAdaptations(label);
 
             return null;
         } else {
@@ -72,6 +75,7 @@ public aspect WrapperExt {
                 moveASide(thisJoinPoint);
                 AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
                 QoSMetricsTracker.getInstance().incrementAdaptations(label);
+                FailureAvoidanceMetricTracker.getInstance().addFailureAvoidance(label);
             }
         }
     }
@@ -80,7 +84,7 @@ public aspect WrapperExt {
         Drone drone = (Drone) thisJoinPoint.getArgs()[0];
         int wrapper = drone.getWrapperId();
 
-        if (wrapper != 1) {
+        if (wrapper != 9) {
             return proceed();
         }
 
@@ -95,8 +99,9 @@ public aspect WrapperExt {
             if (isOnWater)
                 moveASide(thisJoinPoint);
             keepFlying(thisJoinPoint);
-            QoSMetricsTracker.getInstance().incrementAdaptations(label);
             AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
+            QoSMetricsTracker.getInstance().incrementAdaptations(label);
+            FailureAvoidanceMetricTracker.getInstance().addFailureAvoidance(label);
             return false;
         }
 
@@ -105,8 +110,9 @@ public aspect WrapperExt {
             if (isOnWater)
                 moveASide(thisJoinPoint);
             keepFlying(thisJoinPoint);
-            QoSMetricsTracker.getInstance().incrementAdaptations(label);
             AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
+            QoSMetricsTracker.getInstance().incrementAdaptations(label);
+            FailureAvoidanceMetricTracker.getInstance().addFailureAvoidance(label);
             return false;
         }
 
@@ -120,6 +126,7 @@ public aspect WrapperExt {
             AdaptationMetricsTracker.getInstance().logMetrics(label);
             QoSMetricsTracker.getInstance().logQoS(label);
             RuntimeCostTracker.getInstance().logRuntimeCost(label);
+            FailureAvoidanceMetricTracker.getInstance().logFailureAvoidance();
         }
     }
 
@@ -138,6 +145,7 @@ public aspect WrapperExt {
             String goDirection = DroneBusinessObject.closeDirection(droneView.getCurrentCellView(), closerLandCellView);
             DroneBusinessObject.goTo(drone, goDirection);
         }
+        QoSMetricsTracker.getInstance().incrementWaterAvoided(drone.getLabel());
     }
 
     private void avoidObstacle(Drone drone) {

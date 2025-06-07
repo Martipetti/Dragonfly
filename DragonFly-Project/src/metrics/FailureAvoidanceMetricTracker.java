@@ -28,17 +28,19 @@ public class FailureAvoidanceMetricTracker {
             return;
         }
 
-        double totalAvoidance = 0;
+        int totalAvoidance = 0;
         for (Integer value : failureAvoidance.values()) {
             totalAvoidance += value;
         }
 
-        double averageAvoidance = totalAvoidance / failureAvoidance.size();
-
-        LoggerController.getInstance().print("Average Robustness: " + (int) averageAvoidance*100 +"%");
-        LoggerController.getInstance().print("Per Drone Robustness:");
+        LoggerController.getInstance().print("Total Failure Avoidance: " + totalAvoidance);
+        LoggerController.getInstance().print("Per Drone Failure Avoidance:");
         failureAvoidance.forEach((droneId, value) ->
                 LoggerController.getInstance().print("- Drone[" + droneId + "]: " + value));
+        clear();
+    }
 
+    private void clear() {
+        failureAvoidance.clear();
     }
 }
