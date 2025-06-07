@@ -323,7 +323,8 @@ public class DroneViewImpl extends DroneView {
             DroneBusinessObject.updateAround(drone);
 
             //loggerController.print("Drone[" + getDroneLabel() + "] " + "Around objects: " + drone.getAroundList());
-            loggerController.print("Drone[" + getDroneLabel() + "] " + "Destiny distance: " + drone.getDistanceDestiny());
+            loggerController.print("Drone[" + getDroneLabel() + "] " + "Destiny distance: " +
+                    String.format("%.2f", drone.getDistanceDestiny()));
 
             return;
         }

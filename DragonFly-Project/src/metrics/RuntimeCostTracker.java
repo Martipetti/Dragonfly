@@ -35,7 +35,7 @@ public class RuntimeCostTracker {
     public void logRuntimeCost(String id) {
         long totalTime = cycleDuration.getOrDefault(id, 0L);
 
-        LoggerController.getInstance().print("Drone[" + id + "] Runtime Cost: " + totalTime + "ms");
+        LoggerController.getInstance().print("Drone[" + id + "] Runtime Cost: " + totalTime/1000 + "s");
         clear(id);
     }
 

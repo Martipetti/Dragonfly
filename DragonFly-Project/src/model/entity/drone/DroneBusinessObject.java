@@ -3,6 +3,7 @@ package model.entity.drone;
 import controller.*;
 import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
+import metrics.FailureAvoidanceMetricTracker;
 import metrics.QoSMetricsTracker;
 import model.Cell;
 import util.StopWatch;
@@ -1105,6 +1106,7 @@ public class DroneBusinessObject {
             System.out.println("Drone[" + drone.getLabel() + "] " + "Return to home completed successfully");
             LoggerController.getInstance().print("Drone[" + drone.getLabel() + "] " + "Return to home completed successfully");
             QoSMetricsTracker.getInstance().incrementMissionFailed(drone.getLabel());
+            FailureAvoidanceMetricTracker.getInstance().addFailureAvoidance(drone.getLabel());
             return;
         }
         if (drone.getDistanceDestiny() == 0) {
@@ -1115,6 +1117,7 @@ public class DroneBusinessObject {
         }
         if (drone.getDistanceDestiny() != 0 && drone.getDistanceSource() != 0) {
             QoSMetricsTracker.getInstance().incrementMissionFailed(drone.getLabel());
+            FailureAvoidanceMetricTracker.getInstance().addFailureAvoidance(drone.getLabel());
         }
 
        /* if(drone.isGoingManualToDestiny()){
@@ -1128,6 +1131,7 @@ public class DroneBusinessObject {
             LoggerController.getInstance().print("Drone[" + drone.getLabel() + "] " + "Drone landed on water");
             QoSMetricsTracker.getInstance().incrementMissionFailed(drone.getLabel());
             QoSMetricsTracker.getInstance().incrementGoodsLoosed(drone.getLabel());
+            FailureAvoidanceMetricTracker.getInstance().addFailureAvoidance(drone.getLabel());
         } else {
             System.out.println("Drone[" + drone.getLabel() + "] " + "Drone landed successfully");
             LoggerController.getInstance().print("Drone[" + drone.getLabel() + "] " + "Drone landed successfully");
