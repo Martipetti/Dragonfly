@@ -93,8 +93,9 @@ public aspect WrapperExt {
         boolean strongWind = drone.isStrongWind();
         boolean isOnWater = drone.isOnWater();
         String label = drone.getLabel();
+        double battery = drone.getCurrentBattery();
 
-        if ((strongRain ^ strongWind) && distance <= 60) {
+        if (!(strongRain & strongWind) && distance <= 60 && battery > 0) {
             AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
             if (isOnWater)
                 moveASide(thisJoinPoint);
@@ -105,17 +106,18 @@ public aspect WrapperExt {
             return false;
         }
 
-        if (strongRain && strongWind && distance < 30) {
+        if (strongRain && strongWind && distance < 30 && battery > 0) {
             AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
             if (isOnWater)
                 moveASide(thisJoinPoint);
             keepFlying(thisJoinPoint);
             AdaptationMetricsTracker.getInstance().markEvent(label + "_completion");
             QoSMetricsTracker.getInstance().incrementAdaptations(label);
-            FailureAvoidanceMetricTracker.getInstance().addFailureAvoidance(label);
             return false;
         }
 
+        moveASide(thisJoinPoint);
+        drone.setIsSafeland(true);
         return true;
     }
 
