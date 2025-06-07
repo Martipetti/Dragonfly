@@ -53,13 +53,7 @@ public aspect Wrapper1 {
         String label = drone.getLabel();
         double battery = drone.getCurrentBattery();
 
-        if (battery <= 10 && distance > 60){
-            moveASide(thisJoinPoint);
-            drone.setIsSafeland(true);
-            return true;
-        }
-
-        if ((strongRain ^ strongWind) && distance <= 60 && battery > 0) {
+        if (!(strongRain & strongWind) && distance <= 60 && battery > 0) {
             AdaptationMetricsTracker.getInstance().markEvent(label + "_anomaly");
             if (isOnWater)
                 moveASide(thisJoinPoint);
