@@ -42,17 +42,21 @@ public aspect WrapperFunction {
                 0.075 * strongWindPenalty +
                 0.15 * waterPenalty;
 
-        LoggerController.getInstance().print("Drone["+drone.getLabel()+"] Utility Function: "+utilityFunction);
+        LoggerController.getInstance().print("Drone["+drone.getLabel()+"] Utility Function: "+
+                String.format("%.2f", utilityFunction));
 
-        if (battery == 0){
-            return true;
-        }
-        if (utilityFunction < 0.3) {
-            keepFlying(drone);
-            return false;
-        } else if (utilityFunction < 0.5) {
-            moveASide(drone);
-            return false;
+        if ( battery > 0) {
+            if (utilityFunction < 0.3) {
+                keepFlying(drone);
+                return false;
+            } else if (utilityFunction < 0.5) {
+                moveASide(drone);
+                return false;
+            } else {
+                moveASide(drone);
+                drone.setIsSafeland(true);
+                return true;
+            }
         } else {
             moveASide(drone);
             drone.setIsSafeland(true);
